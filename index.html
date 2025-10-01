@@ -24,6 +24,11 @@
     h1 {
       margin: 0;
     }
+    h2 {
+      margin-top: 10px;
+      text-align: center;
+      color: #24292e;
+    }
     .container {
       flex: 1;
       max-width: 800px;
@@ -44,6 +49,19 @@
     .step.active {
       display: block;
     }
+    /* ✅ Style spécial dernière étape */
+    .step.final {
+      background: #d1fae5; /* vert clair */
+      border-left: 6px solid #10b981; /* vert vif */
+      font-weight: bold;
+      text-align: center;
+      font-size: 18px;
+      animation: pulse 0.6s ease-in-out;
+    }
+    .step.final strong {
+      color: #065f46;
+    }
+
     code {
       background: #eee;
       padding: 2px 6px;
@@ -73,6 +91,15 @@
       padding: 10px;
       margin-top: 20px;
       border-radius: 5px;
+    }
+    .help-banner {
+      background: #dbeafe;
+      border-left: 5px solid #3b82f6;
+      padding: 15px;
+      margin-top: 30px;
+      text-align: center;
+      border-radius: 5px;
+      font-weight: bold;
     }
     .nav-buttons {
       display: flex;
@@ -107,6 +134,11 @@
       from {opacity: 0;}
       to {opacity: 1;}
     }
+    @keyframes pulse {
+      0% { transform: scale(0.95); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
 
     /* ✅ Bandeau notification */
     .toast {
@@ -135,6 +167,8 @@
   </header>
 
   <div class="container">
+    <h2>📌 Étapes du tutoriel</h2>
+    
     <div id="steps">
       <div class="step active">1. Installer Git : <a href="https://git-scm.com/downloads/win" target="_blank">Télécharger Git pour Windows</a></div>
       <div class="step">2. Ouvrir <strong>Git Bash</strong> (terminal).</div>
@@ -145,9 +179,9 @@
         </span>
       </div>
       <div class="step">4. Aller dans son répertoire <code>/home/_____USER_____</code></div>
-      <div class="step">5. Afficher les éléments cachés.</div>
+      <div class="step">5. Afficher les éléments cachés du dossier.</div>
       <div class="step">6. Ouvrir le fichier <code>id_ed25519.pub</code> et copier la clé.</div>
-      <div class="step">7. Aller sur <a href="https://cri.epita.fr" target="_blank">cri.epita.fr/PRENOM.NOM/_._/ssh-keys/</a> et ajouter sa clé.</div>
+      <div class="step">7. Aller sur <a href="https://cri.epita.fr" target="_blank">cri.epita.fr/users/PRENOM.NOM/ssh-keys/</a> et ajouter sa clé.</div>
       <div class="step">8. Retourner sur le terminal Git Bash.</div>
       <div class="step">9. Créer un dossier quelque part (par ex. sur le Bureau /Desktop) et le nommer (epita, ...).</div>
       <div class="step">10. Dans ce dossier, taper :<br>
@@ -156,7 +190,8 @@
           <button class="copy-btn" onclick="copyCode('git clone PRENOM.NOM@git.forge.epita.fr:p/epita-prepa-computer-science/prog-101-p-02-2030/epita-prepa-computer-science-prog-101-p-02-2030-PRENOM.NOM.git')">Copier</button>
         </span>
       </div>
-      <div class="step">11. Vous avez maintenant accès aux fichiers du <strong>TP2 uniquement</strong> sur votre PC.</div>
+      <!-- ✅ Dernière étape stylée -->
+      <div class="step final">🎉 Félicitations ! Vous avez maintenant accès aux fichiers du <strong>TP2 uniquement</strong> sur votre PC.</div>
     </div>
 
     <div class="important">
@@ -166,6 +201,10 @@
     <div class="nav-buttons">
       <button id="prevBtn" disabled>⬅ Retour</button>
       <button id="nextBtn">Étape suivante ➡</button>
+    </div>
+
+    <div class="help-banner">
+      💬 N’hésitez pas à m’envoyer un message si vous avez besoin d’aide
     </div>
   </div>
 
