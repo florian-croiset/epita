@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tutoriel Git - Installation & Utilisation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #24292e;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+    }
+    .container {
+      flex: 1;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      width: 100%;
+    }
+    .step {
+      display: none;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      animation: fadeIn 0.5s ease-in-out;
+      position: relative;
+    }
+    .step.active {
+      display: block;
+    }
+    code {
+      background: #eee;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "Courier New", monospace;
+    }
+    .code-block {
+      display: inline-block;
+      position: relative;
+    }
+    .copy-btn {
+      margin-left: 10px;
+      padding: 4px 8px;
+      font-size: 12px;
+      border: none;
+      border-radius: 5px;
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+    }
+    .copy-btn:hover {
+      background: #218838;
+    }
+    .important {
+      background: #ffe8a1;
+      border-left: 5px solid #f0a500;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 5px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #0366d6;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #024a9c;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: #24292e;
+      color: white;
+      margin-top: auto;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    /* ✅ Bandeau notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease-in-out;
+      font-size: 14px;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Faire les TP à la maison</h1>
+  </header>
+
+  <div class="container">
+    <div id="steps">
+      <div class="step active">1. Installer Git : <a href="https://git-scm.com/downloads/win" target="_blank">Télécharger Git pour Windows</a></div>
+      <div class="step">2. Ouvrir <strong>Git Bash</strong> (terminal).</div>
+      <div class="step">3. Générer une nouvelle clé SSH : 
+        <span class="code-block">
+          <code>ssh-keygen -a 100 -t ed25519</code>
+          <button class="copy-btn" onclick="copyCode('ssh-keygen -a 100 -t ed25519')">Copier</button>
+        </span>
+      </div>
+      <div class="step">4. Aller dans son répertoire <code>/home/_____USER_____</code></div>
+      <div class="step">5. Afficher les éléments cachés.</div>
+      <div class="step">6. Ouvrir le fichier <code>id_ed25519.pub</code> et copier la clé.</div>
+      <div class="step">7. Aller sur <a href="https://cri.epita.fr" target="_blank">cri.epita.fr/PRENOM.NOM/_._/ssh-keys/</a> et ajouter sa clé.</div>
+      <div class="step">8. Retourner sur le terminal Git Bash.</div>
+      <div class="step">9. Créer un dossier quelque part (par ex. sur le Bureau /Desktop) et le nommer (epita, ...).</div>
+      <div class="step">10. Dans ce dossier, taper :<br>
+        <span class="code-block">
+          <code>git clone PRENOM.NOM@git.forge.epita.fr:p/epita-prepa-computer-science/prog-101-p-02-2030/epita-prepa-computer-science-prog-101-p-02-2030-PRENOM.NOM.git</code>
+          <button class="copy-btn" onclick="copyCode('git clone PRENOM.NOM@git.forge.epita.fr:p/epita-prepa-computer-science/prog-101-p-02-2030/epita-prepa-computer-science-prog-101-p-02-2030-PRENOM.NOM.git')">Copier</button>
+        </span>
+      </div>
+      <div class="step">11. Vous avez maintenant accès aux fichiers du <strong>TP2 uniquement</strong> sur votre PC.</div>
+    </div>
+
+    <div class="important">
+      ⚠️ Pensez à <u>sauvegarder les modifications</u> que vous effectuez !
+    </div>
+
+    <div class="nav-buttons">
+      <button id="prevBtn" disabled>⬅ Retour</button>
+      <button id="nextBtn">Étape suivante ➡</button>
+    </div>
+  </div>
+
+  <footer>
+    &copy; Florian Croiset
+  </footer>
+
+  <!-- ✅ Bandeau notification -->
+  <div id="toast" class="toast">Copié ✅</div>
+
+  <script>
+    const steps = document.querySelectorAll('.step');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const toast = document.getElementById('toast');
+    let current = 0;
+
+    function updateSteps() {
+      steps.forEach((step, i) => {
+        step.classList.toggle('active', i === current);
+      });
+
+      prevBtn.disabled = current === 0;
+
+      if (current === steps.length - 1) {
+        nextBtn.textContent = "✅ Terminé !";
+        nextBtn.disabled = true;
+        nextBtn.style.background = "#28a745";
+      } else {
+        nextBtn.textContent = "Étape suivante ➡";
+        nextBtn.disabled = false;
+        nextBtn.style.background = "#0366d6";
+      }
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (current < steps.length - 1) {
+        current++;
+        updateSteps();
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (current > 0) {
+        current--;
+        updateSteps();
+      }
+    });
+
+    function copyCode(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast();
+      });
+    }
+
+    function showToast() {
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
