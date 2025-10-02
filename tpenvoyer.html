@@ -129,8 +129,6 @@ body.sombre {
 body.sombre header{background:#1f1f1f;color:#fff;}
 body.sombre .card{background:#1f1f1f;color:#eaeaea;box-shadow:0 3px 8px rgba(0,0,0,.4);}
 body.sombre pre{background:#111;color:#00ff99;}
-body.sombre .copy-btn{background:#444;color:#fff;}
-body.sombre .validate-btn{background:#444;color:#fff;}
 body.sombre .warn{background:#2b2200;color:#ffeaa7;border-left:4px solid #d39e00;}
 body.sombre .info{background:#002626;color:#bff4ff;border-left:4px solid #00cccc;}
 
@@ -142,10 +140,28 @@ body.clair {
 body.clair header{background:#0056b3;color:#fff;}
 body.clair .card{background:#fff;color:#222;box-shadow:0 3px 8px rgba(0,0,0,.08);}
 body.clair pre{background:#111;color:#f6f8f6;}
-body.clair .copy-btn{background:#ffc107;color:#000;}
-body.clair .validate-btn{background:#17a2b8;color:#fff;}
 body.clair .warn{background:#fff3cd;color:#333;border-left:4px solid #d39e00;}
 body.clair .info{background:#d1ecf1;color:#000;border-left:4px solid #0c5460;}
+
+
+
+
+
+body.sombre .validate-btn{background:#444;color:#fff;}
+body.clair .validate-btn{background:#444;color:#fff;}
+
+body.sombre .validate-btn:hover{background:#8a8a8a;color:#fff;}
+body.clair .validate-btn:hover{background:#8a8a8a;color:#fff;}
+
+
+
+
+/* Bouton code */
+body.sombre .copy-btn{background:#17a2b8;color:#fff;}
+body.sombre .copy-btn:hover{background:#76dff2;color:#fff;}
+
+body.clair .copy-btn{background:#ffc107;color:#000;}
+body.clair .copy-btn:hover{background:#ffd966;color:#000;}
 
 /* Bouton thème */
 /*#mode-toggle{
@@ -396,7 +412,7 @@ pre:focus .cmd {
 <header>
   <div>💻 TP - Envoyer son travail</div><a href="https://prepa.pages.epita.fr/ec/computer-science/programming/students/2030/contents/practicals/b1/prog-101-p-02/prog-101-p-02.html" target="_blank" class="lien_tp">TP n°2 - du 29/09 au 05/10</a>
   <div id="controls">
-    <button id="mode-toggle" class="theme-btn">🌙 Mode sombre</button>
+    <button id="mode-toggle" class="theme-btn">🌙 Mode sombre</button>&nbsp;&nbsp;&nbsp;&nbsp;
     <button id="help-btn" class="theme-btn" title="Aide">❓</button>
   </div>
 </header>
