@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="fr" spellcheck="false">
+<head>
+<meta charset="utf-8">
+<title>TP - Envoyer son travail</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+    
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Segoe UI",Arial,sans-serif;
+  display:flex;flex-direction:column;
+  height:100vh;background:#121212;color:#eaeaea; /* sombre par défaut */
+  overflow:hidden;
+}
+
+[contenteditable="true"] {
+  -webkit-user-modify: read-write-plaintext-only; /* Chrome/Edge */
+  -webkit-user-modify: read-write !important;
+  -moz-user-modify: read-write !important;
+  user-modify: read-write !important;
+  spellcheck: false;
+}
+
+* {
+  spellcheck: false;
+}
+
+
+header{
+  flex:0 0 56px;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 16px;background:#1f1f1f;color:#fff;font-weight:700;
+}
+/*#controls button{
+  background:#28a745;color:#fff;border:none;padding:6px 10px;border-radius:6px;
+  font-weight:700;cursor:pointer;font-size:13px;
+  transition:0.2s;
+}
+#controls button:hover{opacity:0.85;}*/
+#progress{
+  flex:0 0 54px;
+  display:flex;justify-content:center;align-items:center;
+  gap:10px;padding:8px 12px;
+}
+#progress .dot{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid #777;background:#333;color:#eaeaea;font-weight:700;
+  transition:all .18s ease;
+}
+#progress .dot.done{
+  background:#28a745;border-color:#28a745;color:#fff;
+  box-shadow:0 2px 6px rgba(40,167,69,.25);
+}
+.grid{
+  flex:1 1 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+  gap:14px;
+  padding:14px;
+  height: calc(100vh - 56px - 54px);
+}
+.card{
+  background:#1f1f1f;border-radius:10px;padding:12px;display:flex;
+  flex-direction:column;justify-content:flex-start;font-size:13px;
+  box-shadow:0 3px 8px rgba(0,0,0,.4); position:relative; overflow:hidden;
+  transition:0.2s;
+}
+.card.done{outline:3px solid rgba(40,167,69,.4);}
+.card h2{font-size:15px;color:#28a745;display:flex;justify-content:space-between;align-items:center;gap:8px}
+
+
+/*.cmd {
+  white-space: pre-wrap; /* Pour que le texte puisse revenir à la ligne si nécessaire 
+  word-wrap: break-word; /* Casser les mots longs si nécessaire 
+  min-height: 1.5em; /* Hauteur minimale de ligne pour éviter que ça ne soit trop compressé 
+  padding: 0 4px; /* Réduire les espaces autour du texte 
+}
+*/
+
+.copy-btn{
+  position:absolute; top:8px; right:8px;
+  background:#ffc107;border:none;padding:4px 6px;border-radius:4px;
+  font-weight:700;cursor:pointer;font-size:11px;
+}
+.validate-btn{
+  background:#17a2b8;color:#fff;border:none;padding:4px 6px;border-radius:6px;
+  font-weight:700; cursor:pointer;font-size:11px;
+}
+.warn{background:#fff3cd;border-left:4px solid #d39e00;padding:6px;border-radius:6px;font-size:12px;margin-top:8px;color:#333;}
+.info{background:#d1ecf1;border-left:4px solid #0c5460;padding:6px;border-radius:6px;font-size:12px;margin-top:8px;color:#000;}
+#copy-banner,#complete-banner{
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  background:#28a745;color:#fff;padding:6px 12px;border-radius:6px;
+  font-size:12px;opacity:0;pointer-events:none;
+  transition:opacity 0.3s;
+  z-index:100;
+}
+
+
+/* Bouton copier centré verticalement dans le pre */
+.copy-btn {
+  position: absolute;
+  top: 50%; /* centré verticalement */
+  right: 8px;
+  transform: translateY(-50%); /* ajuste parfaitement au milieu */
+  background:#ffc107;
+  border:none;
+  padding:4px 6px;
+  border-radius:4px;
+  font-weight:700;
+  cursor:pointer;
+  font-size:11px;
+}
+body.sombre .copy-btn{
+  background:#444;
+  color:#fff;
+}
+
+
+/* Thème sombre */
+body.sombre {
+  background:#121212;
+  color:#eaeaea;
+}
+body.sombre header{background:#1f1f1f;color:#fff;}
+body.sombre .card{background:#1f1f1f;color:#eaeaea;box-shadow:0 3px 8px rgba(0,0,0,.4);}
+body.sombre pre{background:#111;color:#00ff99;}
+body.sombre .copy-btn{background:#444;color:#fff;}
+body.sombre .validate-btn{background:#444;color:#fff;}
+body.sombre .warn{background:#2b2200;color:#ffeaa7;border-left:4px solid #d39e00;}
+body.sombre .info{background:#002626;color:#bff4ff;border-left:4px solid #00cccc;}
+
+/* Thème clair */
+body.clair {
+  background:#f0f4f8;
+  color:#222;
+}
+body.clair header{background:#0056b3;color:#fff;}
+body.clair .card{background:#fff;color:#222;box-shadow:0 3px 8px rgba(0,0,0,.08);}
+body.clair pre{background:#111;color:#f6f8f6;}
+body.clair .copy-btn{background:#ffc107;color:#000;}
+body.clair .validate-btn{background:#17a2b8;color:#fff;}
+body.clair .warn{background:#fff3cd;color:#333;border-left:4px solid #d39e00;}
+body.clair .info{background:#d1ecf1;color:#000;border-left:4px solid #0c5460;}
+
+/* Bouton thème */
+/*#mode-toggle{
+  background:#007bff;color:#fff;border:none;padding:6px 10px;border-radius:6px;
+  font-weight:700;cursor:pointer;transition:0.2s;
+}
+#mode-toggle:hover{opacity:0.85;}*/
+
+
+
+
+
+.theme-btn {
+  background: linear-gradient(135deg, #4f8bc9, #6fc1f3); /* dégradé bleu doux */
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s ease, transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.theme-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.theme-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* Liste de l'étape 1 */
+#step-1 ul {
+  list-style-type: none; /* Supprime les puces par défaut */
+  padding-left: 20px; /* Ajouter un petit padding pour l'indentation */
+  margin-top: 10px;
+}
+
+#step-1 li {
+  position: relative; /* Positionner la puce personnalisée */
+  padding-left: 24px; /* Ajouter un padding à gauche pour l'espace de la puce */
+  font-size: 14px; /* Agrandir légèrement la police */
+  color: #eaeaea; /* Couleur de texte douce */
+  line-height: 1.6; /* Augmenter l'espacement des lignes */
+  font-weight: 500; /* Ajouter un peu de graisse à la police */
+  transition: color 0.2s ease; /* Transition pour le changement de couleur */
+}
+
+/* Liste de l'étape 1 */
+#step-1 ul {
+  list-style-type: none; /* Supprime les puces par défaut */
+  padding-left: 20px; /* Ajouter un petit padding pour l'indentation */
+  margin-top: 10px;
+}
+
+#step-1 li {
+  position: relative; /* Positionner la puce personnalisée */
+  padding-left: 24px; /* Ajouter un padding à gauche pour l'espace de la puce */
+  font-size: 14px; /* Agrandir légèrement la police */
+  line-height: 1.6; /* Augmenter l'espacement des lignes */
+  font-weight: 500; /* Ajouter un peu de graisse à la police */
+  transition: color 0.2s ease; /* Transition pour le changement de couleur */
+}
+
+/* Puces personnalisées */
+#step-1 li::before {
+  content: "•"; /* Symbole de la puce personnalisée */
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 18px; /* Taille de la puce */
+  line-height: 1; /* Assurer que la puce soit bien centrée verticalement */
+  transition: color 0.2s ease; /* Transition pour le changement de couleur de la puce */
+}
+
+/* Thème sombre */
+body.sombre #step-1 li {
+  color: #eaeaea; /* Couleur claire pour le texte dans le thème sombre */
+}
+
+body.sombre #step-1 li::before {
+  color: #28a745; /* Couleur verte pour la puce dans le thème sombre */
+}
+
+body.sombre #step-1 .warn,
+body.sombre #step-2 .warn,
+body.sombre #step-5 .warn {
+  background-color: #2b2200; /* Fond sombre pour l'avertissement dans le thème sombre */
+  color: #ffeaa7; /* Texte clair pour l'avertissement */
+  border-left: 4px solid #d39e00; /* Bordure jaune pour l'avertissement */
+}
+
+body.sombre #step-1 li:hover {
+  color: #17a2b8; /* Couleur bleu clair au survol du texte dans le thème sombre */
+}
+
+body.sombre #step-1 li:hover::before {
+  color: #17a2b8; /* Couleur bleu clair au survol de la puce dans le thème sombre */
+}
+
+body.sombre #step-1 .warn:hover,
+body.sombre #step-2 .warn:hover,
+body.sombre #step-5 .warn:hover {
+  background-color: #3c2a00; /* Assombrir le fond au survol dans le thème sombre */
+  color: #fff; /* Texte clair au survol dans le thème sombre */
+}
+
+/* Thème clair */
+body.clair #step-1 li {
+  color: #222; /* Couleur sombre pour le texte dans le thème clair */
+}
+
+body.clair #step-1 li::before {
+  color: #007bff; /* Couleur bleue pour la puce dans le thème clair */
+}
+
+body.clair #step-1 .warn,
+body.clair #step-2 .warn,
+body.clair #step-5 .warn {
+  /*background-color: #f0f4f8; /* Fond clair pour l'avertissement dans le thème clair */
+  color: #222; /* Texte sombre pour l'avertissement */
+  border-left: 4px solid #007bff; /* Bordure bleue pour l'avertissement */
+}
+
+body.clair #step-1 li:hover {
+  color: #17a2b8; /* Couleur bleu clair au survol du texte dans le thème clair */
+}
+
+body.clair #step-1 li:hover::before {
+  color: #17a2b8; /* Couleur bleu clair au survol de la puce dans le thème clair */
+}
+
+body.clair #step-1 .warn:hover,
+body.clair #step-2 .warn:hover,
+body.clair #step-5 .warn:hover {
+  background-color: #e1e9f1; /* Assombrir le fond au survol dans le thème clair */
+  color: #333; /* Texte sombre au survol dans le thème clair */
+}
+
+
+body.clair #step-4 .info:hover,
+body.clair #step-5 .info:hover,
+body.clair #step-6 .info:hover {
+  background-color: #94cad4; /* Assombrir le fond au survol dans le thème clair */
+  color: #333; /* Texte sombre au survol dans le thème clair */
+}
+
+body.sombre #step-4 .info:hover,
+body.sombre #step-5 .info:hover,
+body.sombre #step-6 .info:hover {
+  background-color: #94cad4; /* Assombrir le fond au survol dans le thème sombre */
+  color: #fff; /* Texte clair au survol dans le thème sombre */
+}
+
+
+
+
+/* Stylisation de la zone de code pour la rendre fixe et scrollable si nécessaire */
+pre {
+  background: #111 !important;
+  color: #00ff99 !important;
+  padding: 8px 16px !important;
+  font-family: monospace !important;
+  font-size: 12px !important;
+  margin-top: 8px !important;
+  position: relative !important;
+  overflow: auto !important; /* Permet le défilement si le contenu dépasse */
+  max-height: 100px !important; /* Limiter la hauteur de la zone de code */
+  border-radius: 8px !important; /* Arrondir les coins */
+  transition: box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out !important; /* Douce transition pour l'ombre et la bordure */
+  display: inline-block !important; /* Permet à la largeur de s'ajuster au contenu */
+  min-width: 150px !important; /* Définir une largeur minimale pour qu'elle ne devienne pas trop petite */
+  width: auto !important; /* La largeur s'ajuste au contenu */
+  resize: none !important; /* Désactive la possibilité de redimensionner la zone de texte */
+  line-height: 1.6 !important;
+  word-wrap: break-word !important; /* Casse les mots longs si nécessaire */
+  overflow-wrap: break-word !important; /* Gère les débordements de texte */
+  min-height: 36px !important; /* Hauteur minimale pour que la zone ne soit pas trop petite */
+}
+
+/* Effet visuel et bordure personnalisée lors du focus de l'élément pre */
+pre:focus {
+  outline: none !important; /* Retirer la bordure par défaut */
+  box-shadow: 0 0 8px rgba(255, 99, 71, 0.6) !important; /* Ombre rouge/orange subtile */
+  border: 2px solid #ff6347 !important; /* Bordure rouge/orange personnalisée au focus */
+  min-height: 36px !important; /* Hauteur minimale lors de l'édition */
+  max-height: 120px !important; /* Limite la hauteur de la zone de texte */
+  height: auto !important;
+  width: auto !important;
+  display: inline-block !important; /* Assure que la largeur s'ajuste à la taille du texte */
+}
+
+/* Lorsque l'élément pre est en mode édition, la zone devient plus grande */
+pre:focus .cmd {
+  min-height: 48px !important; /* Hauteur plus grande lors de l'édition */
+  font-size: 12px !important; /* Garder la taille du texte constante */
+  padding: 6px !important;
+  color: #ff6347 !important; /* Change la couleur du texte pour correspondre à la bordure */
+}
+
+
+
+
+
+
+
+    /* Style de base pour le lien avec la classe 'lien_tp' */
+    .lien_tp {
+      text-decoration: none;
+      font-size: 14px;
+      color: #df73ff; /* Violet */
+      font-weight: 400; /* Moins épais */
+      padding: 5px 12px; /* Moins de padding pour le rendre plus fin */
+      border-radius: 20px; /* Bords arrondis plus subtils */
+      background-color: transparent; /* Fond transparent */
+      border: 1px solid #df73ff; /* Bordure fine et colorée */
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    /* Effet au survol (hover) */
+    .lien_tp:hover {
+      background-color: #791cf8; /* Change la couleur de fond au survol */
+      color: white; /* Change la couleur du texte au survol */
+      border-color: #7f00ff; /* Change la couleur de la bordure */
+    }
+
+    /* Effet de focus pour l'accessibilité */
+    .lien_tp:focus {
+      outline: none;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.6); /* Ombre bleue autour du lien */
+    }
+
+
+
+
+
+
+
+
+</style>
+</head>
+<body>
+<header>
+  <div>💻 TP - Envoyer son travail</div><a href="https://prepa.pages.epita.fr/ec/computer-science/programming/students/2030/contents/practicals/b1/prog-101-p-02/prog-101-p-02.html" target="_blank" class="lien_tp">TP n°2 - du 29/09 au 05/10</a>
+  <div id="controls">
+    <button id="mode-toggle" class="theme-btn">🌙 Mode sombre</button>
+    <button id="help-btn" class="theme-btn" title="Aide">❓</button>
+  </div>
+</header>
+<div id="progress">
+  <div id="p1" class="dot">1</div>
+  <div id="p2" class="dot">2</div>
+  <div id="p3" class="dot">3</div>
+  <div id="p4" class="dot">4</div>
+  <div id="p5" class="dot">5</div>
+  <div id="p6" class="dot">6</div>
+</div>
+
+<main class="grid">
+<section class="card" id="step-1" data-step="1">
+  <h2>📂 1 — Mise en place <button class="validate-btn">Valider</button></h2><br>
+  <ul><br>
+    <li>.gitignore</li>
+    <li>README (vide = malus)</li>
+  </ul>
+  <div class="warn">⚠️ README vide = malus</div>
+</section>
+
+<section class="card" id="step-2" data-step="2">
+  <h2>➕ 2 — git add <button class="validate-btn">Valider</button></h2>
+  <pre><code class="cmd" contenteditable="true">git add fichier1 fichier2</code><button class="copy-btn">Copier</button></pre>
+  <pre><code class="cmd" contenteditable="true">git add .</code><button class="copy-btn">Copier</button></pre>
+  <div class="warn">⚠️ Attention à <code>git add .</code></div>
+</section>
+
+<section class="card" id="step-3" data-step="3">
+  <h2>✅ 3 — git commit <button class="validate-btn">Valider</button></h2>
+  <pre><code class="cmd" contenteditable="true">git commit -m "Premier commit"</code><button class="copy-btn">Copier</button></pre>
+</section>
+
+<section class="card" id="step-4" data-step="4">
+  <h2>🚀 4 — git push <button class="validate-btn">Valider</button></h2>
+  <pre><code class="cmd" contenteditable="true">git push</code><button class="copy-btn">Copier</button></pre>
+  <div class="info">ℹ️ Utiliser git push après commit</div>
+</section> 
+
+
+<section class="card" id="step-5" data-step="5">
+  <h2>🏷️ 5 — Tag (archi) <button class="validate-btn">Valider</button></h2>
+  <pre><code class="cmd" contenteditable="true">git tag -a archi-nomdemande -m "Nom demande"</code><button class="copy-btn">Copier</button></pre>
+  <pre><code class="cmd" contenteditable="true">git tag -a submit-nomdemande -m "Nom demande"</code><button class="copy-btn">Copier</button></pre>
+  <pre><code class="cmd" contenteditable="true">git push --follow-tags</code><button class="copy-btn">Copier</button></pre>
+  <div class="warn" style="color:red!important"><strong>&nbsp;⚠ &nbsp;&nbsp;<u>3 <code>submit</code></strong></u> autorisés au maximum <strong><em>par TP</em></strong> !</div>
+  <div class="warn"><strong>⚠️ <u>2 <code>archi</code></strong></u> autorisés au maximum <strong>par heure</strong> !</div>
+
+  <div class="info">ℹ️ Seuls les fichiers commit+push sont récupérés</div>
+
+
+
+</section>
+
+<section class="card" id="step-6" data-step="6">
+  <h2>🔄 6 — git pull <button class="validate-btn">Valider</button></h2>
+  <pre><code class="cmd" contenteditable="true">git pull</code><button class="copy-btn">Copier</button></pre>
+  <div class="info">ℹ️ Seuls les fichiers commit+push sont récupérés</div>
+</section>
+
+</main>
+
+<div id="copy-banner">✅ Copié !</div>
+<div id="complete-banner">🎉 Toutes les étapes sont terminées !</div>
+
+
+
+
+<!-- 2. Fenêtre modale d'aide -->
+<!-- Fenêtre d'aide modale -->
+<div id="help-modal" style="display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); width: 320px; padding: 25px; border-radius: 12px !important; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important; z-index: 101; opacity: 0; transition: opacity 0.3s ease-in-out !important;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h3 style="font-size: 20px !important; margin: 0 !important;"><u>Fonctionnalités</u></h3>
+    <button id="close-help" style="background: none; border: none; font-size: 22px !important; color: #333 !important; cursor: pointer; transition: color 0.3s !important;">&times;</button>
+  </div>
+  <p style="font-size: 14px !important; line-height: 1.6 !important; color: #333 !important;">Voici les fonctionnalités de la page :</p>
+  <ul style="padding-left: 20px !important; font-size: 14px !important; color: #555 !important;">
+    <li><strong>🌙 / 🌞</strong> : Changez entre mode sombre et clair.</li>
+    <li><strong>✅</strong> : Validez chaque étape du tutoriel.<small> Cliquer sur valider. Pour "dévalider" une étape, cliquer sur celle d'avant.</small></li>
+    <li><strong>📋</strong> : Copiez et modifiez les commandes Git en cliquant sur les boutons "Copier".</li>
+    <li><strong>🏷️</strong> : Gérez vos tags et commits Git facilement.</li>
+  </ul>
+</div>
+
+<script>
+// Fonction pour changer les couleurs en fonction du thème
+const setThemeStyles = () => {
+  const body = document.body;
+  const helpModal = document.getElementById('help-modal');
+  const closeHelp = document.getElementById('close-help');
+  const helpBtn = document.getElementById('help-btn');
+
+  if (body.classList.contains('dark-theme')) { // Si le thème est sombre
+    helpModal.style.backgroundColor = '#333';
+    helpModal.style.color = '#fff';
+    closeHelp.style.color = '#fff';
+    helpBtn.style.backgroundColor = '#444';
+    helpBtn.style.color = '#fff';
+  } else { // Thème clair
+    helpModal.style.backgroundColor = '#fff';
+    helpModal.style.color = '#333';
+    closeHelp.style.color = '#333';
+    helpBtn.style.backgroundColor = '#4CAF50';
+    helpBtn.style.color = '#fff';
+  }
+};
+
+// Ouvrir et fermer la fenêtre d'aide avec ?
+const helpBtn = document.getElementById('help-btn');
+const helpModal = document.getElementById('help-modal');
+const closeHelp = document.getElementById('close-help');
+
+// Afficher / cacher la fenêtre d'aide avec le bouton "?"
+helpBtn.addEventListener('click', () => {
+  helpModal.style.display = (helpModal.style.display === 'none' || helpModal.style.display === '') ? 'block' : 'none';
+  helpModal.style.opacity = '1';  // Animation de fondu à l'ouverture
+});
+
+// Fermer la fenêtre d'aide avec la croix
+closeHelp.addEventListener('click', () => {
+  helpModal.style.opacity = '0';  // Animation de fondu à la fermeture
+  setTimeout(() => {
+    helpModal.style.display = 'none';
+  }, 300);  // Délai pour que l'animation de fondu soit visible
+});
+
+// Fermer la fenêtre d'aide avec la touche "Esc"
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && helpModal.style.display === 'block') {
+    helpModal.style.opacity = '0';
+    setTimeout(() => {
+      helpModal.style.display = 'none';
+    }, 300);
+  }
+});
+
+// Mettre à jour les styles à chaque changement de thème
+document.addEventListener('DOMContentLoaded', setThemeStyles);
+document.addEventListener('themeChanged', setThemeStyles); // Pour un changement dynamique de thème
+</script>
+
+<!-- 3. Styles CSS pour la fenêtre modale -->
+<style>
+  /* Bouton d'aide */
+  #help-btn {
+    color: white !important;
+    font-size: 16px;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s !important;
+    background-color: #4CAF50 !important; /* Couleur du bouton d'aide */
+  }
+
+  #help-btn:hover {
+    transform: scale(1.1) !important;
+  }
+
+  /* Styles de la fenêtre modale */
+  .modal {
+    display: none !important;
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.5) !important; /* Ombre de fond de la fenêtre */
+    overflow: auto !important;
+  }
+
+  .modal-content {
+    background-color: #fefefe !important;
+    margin: 15% auto !important;
+    padding: 20px !important;
+    border-radius: 12px !important; /* Bord arrondi */
+    width: 80% !important;
+    max-width: 400px !important;
+    color: #333 !important;
+    font-family: "Segoe UI", Arial, sans-serif !important;
+  }
+
+  .close-btn {
+    color: #aaa !important;
+    font-size: 28px !important;
+    font-weight: bold !important;
+    position: absolute !important;
+    top: 10px !important;
+    right: 15px !important;
+    cursor: pointer !important;
+  }
+
+  .close-btn:hover,
+  .close-btn:focus {
+    color: black !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+  }
+</style>
+
+
+
+
+
+<script>
+(function(){
+  const dots={};
+  for(let i=1;i<=6;i++) dots[i]=document.getElementById('p'+i);
+  const banner=document.getElementById('copy-banner');
+  const completeBanner=document.getElementById('complete-banner');
+
+  // copier code + afficher bandeau
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const pre = btn.closest('pre');
+      if(pre){
+        const codeEl = pre.querySelector('.cmd');
+        if(codeEl){
+          try{
+            // Copier le texte dans le div contenteditable
+            await navigator.clipboard.writeText(codeEl.innerText.trim());
+          } catch(e) {
+            console.error('Erreur lors de la copie dans le presse-papiers', e);
+          }
+          banner.style.opacity='1';
+          setTimeout(()=>{banner.style.opacity='0';},1400);
+        }
+      }
+    });
+  });
+
+  // validation séquentielle et dévalidation cascade
+  document.querySelectorAll('.validate-btn').forEach((btn,i)=>{
+    btn.addEventListener('click',()=>{
+      const step=i+1;
+      const card=document.getElementById('step-'+step);
+      const dot=dots[step];
+      const done=card.classList.contains('done');
+
+      if(done){
+        // dévalidation cascade
+        for(let s=step;s<=6;s++){
+          const c=document.getElementById('step-'+s);
+          c.classList.remove('done');
+          dots[s].classList.remove('done');
+        }
+      } else {
+        // validation séquentielle
+        if(step>1){
+          const prev=document.getElementById('step-'+(step-1));
+          if(!prev.classList.contains('done')) return; // précédente non validée
+        }
+        card.classList.add('done');
+        dot.classList.add('done');
+      }
+
+      // affichage bandeau global si tout validé
+      let allDone=true;
+      for(let s=1;s<=6;s++){
+        if(!document.getElementById('step-'+s).classList.contains('done')){
+          allDone=false;
+          break;
+        }
+      }
+      if(allDone){
+        completeBanner.style.opacity='1';
+        setTimeout(()=>{completeBanner.style.opacity='0';},2000);
+      }
+    });
+  });
+
+  
+})();
+
+// initialisation thème sombre par défaut
+document.body.classList.add('sombre');
+const toggleBtn = document.getElementById('mode-toggle');
+
+toggleBtn.addEventListener('click', ()=>{
+  if(document.body.classList.contains('sombre')){
+    document.body.classList.remove('sombre');
+    document.body.classList.add('clair');
+    toggleBtn.textContent = "🌞 Mode clair";
+  } else {
+    document.body.classList.remove('clair');
+    document.body.classList.add('sombre');
+    toggleBtn.textContent = "🌙 Mode sombre";
+  }
+});
+
+
+</script>
+
+
+<style>
+    /* Pour désactiver la sélection de texte */
+    body {
+      -webkit-user-select: none; /* Safari */
+      -moz-user-select: none;    /* Firefox */
+      -ms-user-select: none;     /* Internet Explorer/Edge */
+      user-select: none;         /* Standard */
+    }
+  </style>
+
+    <script>
+    // Désactive le clic droit
+    document.addEventListener("contextmenu", function(event) {
+      event.preventDefault();  // Annule l'action de clic droit
+    });
+
+
+
+pre:hover {
+  border: 2px solid #00ff99; /* Bordure qui se colorie au survol */
+  background: #1e1e1e; /* Légère modification du fond au survol */
+}
+  </script>
+</body>
+</html>
