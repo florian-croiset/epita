@@ -1,1 +1,874 @@
 
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    :root{
+      --bg1: #0f1724; /* deep */
+      --glass: rgba(255,255,255,0.06);
+      --accent1: #7c3aed; /* purple */
+      --accent2: #06b6d4; /* cyan */
+      --muted: rgba(255,255,255,0.65);
+      --glass-2: rgba(255,255,255,0.03);
+      --card-radius: 18px;
+      --shadow: 0 10px 30px rgba(2,6,23,0.6);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.12), transparent 10%),
+                  radial-gradient(900px 500px at 90% 90%, rgba(6,182,212,0.10), transparent 8%),
+                  var(--bg1);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:40px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:28px;
+    }
+
+
+html, body {
+  height: 100%; /* Remplir toute la hauteur de la fenêtre */
+  margin: 0; /* Enlever les marges par défaut */
+  padding: 0; /* Enlever le padding par défaut */
+}
+
+body {
+  transform: scale(0.75); /* Dézoomer la page à 75% */
+  /*transform-origin: top left; Garder l'origine du zoom en haut à gauche */
+  /*width: 100%; Assurer que le body occupe toute la largeur */
+  /*height: 100%; Assurer que le body occupe toute la hauteur */
+  /*position: relative; Pour pouvoir jouer avec les positions absolues */
+  top: 25%; /* Déplacer le contenu vers le bas (ajuster cette valeur selon le besoin) */
+  overflow: hidden; /* Empêche les barres de défilement si c'est bien ajusté */
+}
+
+.app {
+  margin-bottom: 0; /* Réinitialiser les marges de l'application pour éviter les coupures */
+}
+
+
+
+
+
+    /* Container */
+    .app{
+      width:1100px; max-width:96vw; display:flex; gap:24px;
+      align-items:flex-start;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      width:320px; background:linear-gradient(135deg,var(--glass), rgba(255,255,255,0.02));
+      border-radius:var(--card-radius);
+      padding:20px; box-shadow:var(--shadow); backdrop-filter: blur(10px) saturate(120%);
+      border:1px solid rgba(255,255,255,0.04);
+      position:relative; overflow:hidden;
+    }
+    .brand{display:flex; align-items:center; gap:12px; margin-bottom:14px}
+    .logo{
+      width:54px; height:54px; border-radius:12px; display:grid; place-items:center;
+      background: linear-gradient(135deg,var(--accent1),var(--accent2));
+      box-shadow: 0 6px 18px rgba(6,182,212,0.12); transform:rotate(-12deg);
+    }
+    .logo svg{filter:drop-shadow(0 6px 20px rgba(4,6,23,0.6));}
+    .brand h1{font-size:16px; margin:0; letter-spacing:0.2px}
+    .brand p{margin:0; color:var(--muted); font-size:12px}
+
+.search {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 14px 0 18px;
+  background: var(--glass-2);
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  position: relative; /* Assure que le positionnement est correct */
+  z-index: 10; /* Élève la barre de recherche au-dessus des autres éléments */
+}
+
+.search input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: inherit;
+  position: relative; /* Assure la bonne gestion du focus */
+  z-index: 15; /* Met le champ de texte au-dessus du conteneur */
+}
+
+
+    .menu{display:flex; flex-direction:column; gap:8px}
+    .menu-item{
+      display:flex; gap:12px; align-items:center; padding:12px; border-radius:12px; cursor:pointer;
+      transition:all .28s cubic-bezier(.2,.9,.2,1); position:relative; overflow:visible;
+      background:linear-gradient(90deg, rgba(124,58,237,0.08), rgba(6,182,212,0.04))
+    }
+    .menu-item:hover{transform:translateY(0px); box-shadow:0 18px 40px rgba(2,6,23,0.5)}/*transform:translateY(-4px)*/
+    .menu-item .ico{width:44px; height:44px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent); border:1px solid rgba(255,255,255,0.02)}
+    .menu-item h3{margin:0; font-size:15px; color:white}
+    .menu-item p{margin:0; color:var(--muted); font-size:12px}
+    .menu-item.active{background:linear-gradient(90deg, rgba(124,58,237,0.08), rgba(6,182,212,0.04)); background-color:rgb(101, 139, 139); border:1px solid rgba(124,58,237,0.14); box-shadow:0 12px 30px rgba(7,12,34,0.6); translateY(0px) scale(1.05)}/*transform:translateY(-6px) scale(1.01)*/
+
+    /* Right - content preview */
+    .content{
+      flex:1; min-height:520px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:20px; padding:22px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);
+      position:relative; overflow:hidden;
+    }
+    .content-header{display:flex; align-items:center; justify-content:space-between; gap:16px}
+    .tagline{color:var(--muted); font-size:13px}
+    .big-title{font-size:26px; margin:8px 0 16px}
+
+    /* cards */
+    .cards{display:grid; grid-template-columns:repeat(2,1fr); gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:18px; border-radius:14px; border:1px solid rgba(255,255,255,0.02); transition:transform .3s, box-shadow .3s;}
+    .card:hover{transform:translateY(-8px); box-shadow:0 28px 50px rgba(2,6,23,0.6)}
+
+    .pill{display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,0.03); font-size:13px}
+
+    /* subtle animated gradient highlight */
+    .accent-bar{height:6px; width:100%; border-radius:8px; margin-top:12px; background:linear-gradient(90deg,var(--accent1),var(--accent2)); animation:slide 6s linear infinite}
+    @keyframes slide{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    /* responsive */
+    @media (max-width:900px){
+      .app{flex-direction:column; align-items:stretch}
+      .sidebar{width:100%}
+      .cards{grid-template-columns:1fr}
+    }
+
+    /* small fancy touches */
+    .glow{position:absolute; right:-120px; top:-80px; width:420px; height:420px; filter:blur(100px); opacity:.12; background:conic-gradient(from 90deg, rgba(124,58,237,0.9), rgba(6,182,212,0.9)); transform:rotate(20deg);}
+
+    /* accessibility focus */
+    .menu-item:focus{outline:2px solid rgba(124,58,237,0.22); outline-offset:3px}
+
+
+.resources {
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.resource-item {
+  margin: 8px 0;
+}
+
+.resource-item a {
+  color: var(--accent1);
+  text-decoration: none;
+}
+
+.resource-item a:hover {
+  text-decoration: underline;
+}
+
+
+
+
+
+/* ✅ Étend la case de description sur toute la largeur */
+.wide-card {
+  grid-column: 1 / -1; /* occupe les deux colonnes */
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  backdrop-filter: blur(8px);
+}
+
+
+
+
+
+
+.no-img {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--muted);
+}
+
+
+.subject-img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Menu matières">
+
+    <aside class="sidebar" aria-label="Navigation matières">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="brand">
+        <div class="logo" aria-hidden>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12h16" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+            <path d="M7 7h10" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+            <path d="M7 17h10" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Menu des matières</h1>
+          <p>Interface</p>
+        </div>
+      </div>
+
+      <div class="search" role="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="1.4"/>
+        </svg>
+        <input id="search" placeholder="Rechercher une matière..." aria-label="Rechercher une matière" />
+      </div>
+
+      <nav class="menu" id="menu" aria-label="Liste des matières">
+        <!-- menu items are generated by JS for clarity -->
+      </nav>
+
+      <!--<div style="margin-top:18px; display:flex; gap:8px; align-items:center; justify-content:space-between">
+        <div class="pill" title="Statut">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.2"></circle>
+          </svg>
+          En ligne
+        </div>
+        <div style="color:var(--muted); font-size:13px">v1.0</div>
+      </div>-->
+
+            <!--<div style="margin-top:18px; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--muted); opacity:0.8;">
+  © 2025 Florian Croiset<!-- — Tous droits réservés-->
+<!--</div>-->
+<div id="footer-copy" style="margin-top:18px; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--muted); opacity:0.8;">
+  <!-- Ce texte sera remplacé par JS -->
+</div>
+<!-- — Tous droits réservés-->
+<script>
+document.getElementById('footer-copy').innerHTML =
+  `© ${new Date().getFullYear()} Florian Croiset`; 
+</script>
+    </aside>
+
+    <main class="content">
+      <div class="content-header">
+        <div>
+          <div class="tagline">Sélection actuelle</div>
+          <div class="big-title" id="current-title">Choisissez une matière</div>
+        </div>
+      </div>
+
+      <div class="cards">
+  <!-- Carte 1 : Matière -->
+  <div class="card">
+    <h3 id="card-title">Aucune matière sélectionnée</h3>
+    <p id="card-desc" style="color:var(--muted); margin-top:8px">
+      Cliquez sur une matière dans le menu pour voir un aperçu rapide et des actions.
+    </p>
+  </div>
+
+  <!-- Carte 2 : Liens utiles -->
+  <div class="card">
+    <h4>Liens utiles</h4>
+    <div id="resources-list" style="margin-top:8px; color:var(--muted)">
+      Aucune matière sélectionnée.
+    </div>
+  </div>
+
+  <!-- 🆕 Carte 3 : Description / Infos supplémentaires -->
+<!-- Carte 3 : Description & Informations -->
+<div class="card wide-card">
+  <h4>Description & Informations</h4>
+  <div id="description-content" style="margin-top:10px; color:var(--muted); line-height:1.6;">
+    Aucun contenu affiché pour le moment. Sélectionnez une matière pour consulter sa description détaillée.
+  </div>
+</div>
+</div>
+    </main>
+
+
+  </div>
+
+  <script>
+
+const subjects = [
+  { 
+    key: 'maths', 
+    title: 'Maths', 
+    desc: 'Algèbre, Analyse, Géométrie, Probabilités.',
+    resources: [
+      //{ title: 'Cours sur l\'Algèbre', link: 'https://example.com/cours-algebre' },
+    ],
+    image: 'https://cdn-icons-png.flaticon.com/512/1055/1055644.png', // 🧮 calculatrice
+  },
+  { 
+    key: 'prog', 
+    title: 'Prog', 
+    desc: 'Langages, paradigmes, pratique & projets.',
+    //description: `
+    //  <p>Introduction à la programmation : variables, boucles, fonctions et structures de données.</p>
+    //  <p>Les étudiants manipulent différents langages — C, Python, JavaScript — et apprennent les concepts orientés objet.</p>
+    //  <p>Objectif : devenir autonome sur la conception et la maintenance de programmes robustes.</p>
+    //`,
+        resources: [
+      { title: 'Envoyer son travail', link: 'https://florian-croiset.github.io/epita/tpenvoyer.html' },
+      { title: 'Installer Git', link: 'https://florian-croiset.github.io/epita/git.html' }
+    ],
+    image: 'https://cdn-icons-png.flaticon.com/512/1183/1183672.png', // 💻 code (< >)
+  },
+  { 
+    key: 'algo', 
+    title: 'Algo', 
+    desc: 'Structures de données, complexité, résolution.',
+    resources: [
+    ],
+    image: 'https://cdn-icons-png.flaticon.com/512/2103/2103658.png', // 🔢 algorithmes
+  },
+  { 
+    key: 'phys', 
+    title: 'Physique', 
+    desc: 'Mécanique, électromagnétisme, optique.',
+    resources: [
+    ],
+    image: 'https://cdn-icons-png.flaticon.com/512/3772/3772584.png', // ⚛️ atome / physique moderne
+  },
+  { 
+    key: 'elec', 
+    title: 'Electronique', 
+    desc: 'Circuits, composants, signaux.',
+    resources: [
+    ],
+    image: 'https://cdn-icons-png.flaticon.com/512/1076/1076320.png', // ⚡ composant blanc
+  },
+  { 
+    key: 'ang', 
+    title: 'Anglais', 
+    desc: 'Compétences orales, écrites et techniques.',
+    resources: [
+    ],
+    image: 'https://cdn-icons-png.flaticon.com/512/197/197374.png', // 🇬🇧 Drapeau Royaume-Uni
+  },
+  { 
+    key: 'mtcds', 
+    title: 'MT&CDS', 
+    desc: 'Théorie des matières; système de contrôle.',
+    resources: [
+    ],
+    image: 'https://cdn-icons-png.flaticon.com/512/1823/1823399.png', // ⚙️ engrenage intégralement blanc
+  },
+  { 
+    key: 'projet', 
+    title: 'Projet', 
+    desc: 'Gestion, planning et développement de projet.',
+    resources: [
+    ],
+    image: 'https://cdn-icons-png.flaticon.com/512/2721/2721299.png', // 🗂️ gestion
+  }
+];
+
+
+
+
+
+    const menu = document.getElementById('menu');
+    const currentTitle = document.getElementById('current-title');
+    const cardTitle = document.getElementById('card-title');
+    const cardDesc = document.getElementById('card-desc');
+    const resourcesList = document.getElementById('resources-list');
+
+    function mkIcon(letter){
+      return ` <div class="ico" aria-hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-opacity="0.12" stroke-width="1.2"></rect><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="10" font-weight="700">${letter}</text></svg></div>`
+    }
+
+function renderMenu(list) {
+  menu.innerHTML = '';
+  if (list.length === 0) {
+    menu.innerHTML = '<p style="color: var(--muted);">Aucune matière trouvée</p>';
+  } else {
+    list.forEach((s, i) => {
+      const el = document.createElement('button');
+      el.className = 'menu-item';
+      el.type = 'button';
+      el.setAttribute('data-key', s.key);
+      el.setAttribute('aria-pressed', 'false');
+      el.tabIndex = 0;
+      el.innerHTML = mkIcon(s.title.charAt(0)) + `<div style="text-align:left"><h3>${s.title}</h3><p>${s.desc}</p></div>`;
+      el.addEventListener('click', () => selectSubject(s, el));
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectSubject(s, el);
+        }
+      });
+      menu.appendChild(el);
+    });
+  }
+}
+
+
+
+    
+function selectSubject(subject, el){
+  document.querySelectorAll('.menu-item').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  currentTitle.textContent = subject.title;
+  cardTitle.textContent = subject.title;
+  cardDesc.textContent = subject.desc;
+  updateResources(subject.resources);
+
+  // ✅ Corrige : garde la case centrée
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // ✅ Ajouter la description individuelle de la matière
+const descContent = document.getElementById('description-content');
+if (subject.description && subject.description.trim() !== "") {
+  descContent.innerHTML = subject.description;
+} else {
+  descContent.innerHTML = "<p style='color:var(--muted)'>Aucune description disponible pour cette matière.</p>";
+}
+}
+
+
+
+
+    // Search filter
+    document.getElementById('search').addEventListener('input', (e)=>{
+      const q = e.target.value.trim().toLowerCase();
+      const filtered = subjects.filter(s=> s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q));
+      renderMenu(filtered);
+    });
+
+    // initial render
+    renderMenu(subjects);
+
+    // nice: auto-select first item after small delay for demo (non-blocking)
+    setTimeout(()=>{
+      const first = document.querySelector('.menu-item'); if(first) first.click();
+    }, 350);
+
+document.getElementById('search').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+
+  // Si la recherche est vide, on montre tous les éléments
+  if (q === '') {
+    renderMenu(subjects);
+  } else {
+    const filtered = subjects.filter(s => 
+      s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q)
+    );
+    renderMenu(filtered);
+  }
+});
+
+function renderMenu(list){
+  menu.innerHTML = '';
+  list.forEach((s,i)=>{
+    const el = document.createElement('button');
+    el.className = 'menu-item';
+    el.type = 'button';
+    el.setAttribute('data-key', s.key);
+    el.setAttribute('aria-pressed','false');
+    el.tabIndex = 0;
+    el.innerHTML = `
+      <div class="ico" aria-hidden>
+        <img src="${s.image}" alt="${s.title}" class="subject-img"
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1828/1828843.png';">
+      </div>
+      <div style="text-align:left">
+        <h3>${s.title}</h3>
+        <p>${s.desc}</p>
+      </div>`;
+    el.addEventListener('click', ()=> selectSubject(s, el));
+    el.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' || e.key===' ') {
+        e.preventDefault();
+        selectSubject(s, el);
+      }
+    });
+    menu.appendChild(el);
+  });
+}
+
+
+
+
+
+// Ajouter un gestionnaire d'événements pour la touche Échap
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // Lorsque "Échap" est pressé, désélectionner la matière active et afficher le message "Sélectionner une matière"
+    deselectSubject();
+    showSelectMessage();  // Afficher le message "Sélectionner une matière"
+  }
+});
+
+// Fonction pour désélectionner la matière et réinitialiser l'aperçu
+function deselectSubject() {
+  // Retirer la classe "active" de la matière sélectionnée
+  document.querySelectorAll('.menu-item').forEach(x => {
+    x.classList.remove('active');
+    x.setAttribute('aria-pressed', 'false');
+  });
+}
+
+// Fonction pour afficher le message "Sélectionner une matière"
+function showSelectMessage() {
+  // Mettre à jour le titre et la description à droite avec "Sélectionner une matière"
+  cardTitle.textContent = 'Sélectionner une matière';
+  cardDesc.textContent = 'Veuillez choisir une matière dans le menu pour voir un aperçu rapide et des actions.';
+  currentTitle.textContent = 'Choisissez une matière'; // Réinitialiser le titre à gauche
+}
+
+// Fonction de réinitialisation de l'aperçu
+function resetPreview() {
+  cardTitle.textContent = 'Aucune matière sélectionnée';
+  cardDesc.textContent = 'Cliquez sur une matière dans le menu pour voir un aperçu rapide et des actions.';
+  currentTitle.textContent = 'Choisissez une matière'; // Titre à gauche réinitialis
+    // ✅ Réinitialiser la section "Liens utiles"
+  const resourcesList = document.getElementById('resources-list');
+  resourcesList.innerHTML = 'Aucune matière sélectionnée.';
+  const descContent = document.getElementById('description-content');
+descContent.innerHTML = "<p style='color:var(--muted)'>Aucun contenu affiché pour le moment. Sélectionnez une matière pour consulter sa description détaillée.</p>";
+}
+
+
+
+// Réinitialisation de l'aperçu lorsque l'utilisateur tape dans la barre de recherche
+document.getElementById('search').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+
+  // Si la recherche est vide, on montre toutes les matières et réinitialise l'aperçu
+  if (q === '') {
+    renderMenu(subjects);
+    resetPreview(); // Réinitialiser le contenu de l'aperçu
+  } else {
+    const filtered = subjects.filter(s => 
+      s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q)
+    );
+    renderMenu(filtered);
+    resetPreview(); // Réinitialiser le contenu de l'aperçu
+  }
+});
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // Lorsque "Échap" est pressé, désélectionner la matière active et afficher le message "Sélectionner une matière"
+    deselectSubject();
+    showSelectMessage();  // Afficher le message "Sélectionner une matière"
+  }
+
+  // Vérifier si la touche Tab est pressée
+  if (e.key === 'Tab') {
+    e.preventDefault(); // Empêcher le comportement par défaut du Tab (naviguer dans les éléments)
+    
+    // Si "Shift + Tab", on va à la matière précédente
+    if (e.shiftKey) {
+      moveFocus(-1);
+    } else {
+      // Sinon, on va à la matière suivante
+      moveFocus(1);
+    }
+  }
+});
+
+// Fonction pour déplacer la sélection (focaliser) sur la matière suivante ou précédente
+function moveFocus(direction) {
+  const menuItems = document.querySelectorAll('.menu-item');
+  let currentIndex = Array.from(menuItems).findIndex(item => item.classList.contains('active'));
+  
+  // Si aucune matière n'est sélectionnée, on commence par la première
+  if (currentIndex === -1) currentIndex = 0;
+  
+  // Calculer l'index de la matière suivante/précédente
+  let nextIndex = currentIndex + direction;
+  
+  // Si on dépasse les limites, on boucle autour (première ou dernière matière)
+  if (nextIndex < 0) nextIndex = menuItems.length - 1;
+  if (nextIndex >= menuItems.length) nextIndex = 0;
+
+  // Sélectionner la matière à l'index calculé
+  selectSubject(subjects[nextIndex], menuItems[nextIndex]);
+}
+
+
+
+
+
+
+function selectSubject(subject, el) {
+  // nettoyage et activation (déjà présent chez toi)
+  document.querySelectorAll('.menu-item').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  currentTitle.textContent = subject.title;
+  cardTitle.textContent = subject.title;
+  cardDesc.textContent = subject.desc;
+  updateResources(subject.resources);
+
+  // ✳️ Mets à jour aussi la zone "description" avec plus de contenu
+  const desc = document.getElementById('description-content');
+  desc.innerHTML = `
+    <p><strong>${subject.title}</strong> — Voici un aperçu détaillé de cette matière :</p>
+    <p>${subject.desc}</p>
+    <p style="margin-top:8px; color:var(--muted)">Tu peux y ajouter des explications longues, des notes importantes, ou un résumé plus complet du cours ici.</p>
+  `;
+}
+
+
+
+// Fonction pour afficher le message "Sélectionner une matière" lorsqu'on appuie sur Échap
+function showSelectMessage() {
+  cardTitle.textContent = 'Sélectionner une matière';
+  cardDesc.textContent = 'Veuillez choisir une matière dans le menu pour voir un aperçu rapide et des actions.';
+  currentTitle.textContent = 'Choisissez une matière'; // Réinitialiser le titre à gauche
+    // ✅ Réinitialiser la section "Liens utiles"
+  const resourcesList = document.getElementById('resources-list');
+  resourcesList.innerHTML = 'Aucune matière sélectionnée.';
+}
+
+// Fonction pour désélectionner la matière (appuyée sur Échap)
+function deselectSubject() {
+  document.querySelectorAll('.menu-item').forEach(x => {
+    x.classList.remove('active');
+    x.setAttribute('aria-pressed', 'false');
+  });
+  resetPreview();
+}
+
+// Réinitialiser l'aperçu
+function resetPreview() {
+  cardTitle.textContent = 'Aucune matière sélectionnée';
+  cardDesc.textContent = 'Cliquez sur une matière dans le menu pour voir un aperçu rapide et des actions.';
+  currentTitle.textContent = 'Choisissez une matière'; // Titre à gauche réinitialisé
+}
+
+
+
+
+
+
+// Fonction pour sélectionner une matière et mettre à jour l'aperçu avec ses ressources spécifiques
+function selectSubject(subject, el) {
+  // Clear active state for all items
+  document.querySelectorAll('.menu-item').forEach(x => {
+    x.classList.remove('active');
+    x.setAttribute('aria-pressed', 'false');
+  });
+  
+  // Set the active state for the clicked item
+  el.classList.add('active');
+  el.setAttribute('aria-pressed', 'true');
+  
+  // Update the preview to show the subject details
+  currentTitle.textContent = subject.title;
+  cardTitle.textContent = subject.title;
+  cardDesc.textContent = subject.desc;
+
+  // Dynamically display resources for the selected subject
+  updateResources(subject.resources);
+
+  // Animation for selection
+  el.animate([{transform: 'scale(0.99)'}, {transform: 'scale(1)'}], {duration: 250, easing: 'cubic-bezier(.2,.9,.2,1)'});
+}
+
+// Fonction pour mettre à jour la section des ressources dans l'aperçu
+function updateResources(resources) {
+  const resourcesContainer = document.getElementById('resources');
+  
+  // Clear current resources
+  resourcesContainer.innerHTML = '';
+  
+  // Si des ressources sont disponibles, on les affiche
+  if (resources.length > 0) {
+    resources.forEach(resource => {
+      const listItem = document.createElement('li');
+      listItem.textContent = resource;
+      resourcesContainer.appendChild(listItem);
+    });
+  } else {
+    const noResourcesMessage = document.createElement('li');
+    noResourcesMessage.textContent = "Aucune ressource disponible pour cette matière.";
+    resourcesContainer.appendChild(noResourcesMessage);
+  }
+}
+
+
+
+function updateResources(resources) {
+  const resourcesContainer = document.getElementById('resources-list');
+  resourcesContainer.innerHTML = '';  // Vide le conteneur des ressources avant d'ajouter les nouvelles
+
+  if (resources.length === 0) {
+    resourcesContainer.innerHTML = '<p>Veuillez choisir une matière dans le menu pour afficher ses liens.</p>';
+  } else {
+    resources.forEach(resource => {
+      const resourceItem = document.createElement('div');
+      resourceItem.className = 'resource-item';
+
+      // Créez le lien et ajoutez-le
+      resourceItem.innerHTML = `<a href="${resource.link}" target="_blank">${resource.title}</a>`;
+      resourcesContainer.appendChild(resourceItem);
+    });
+  }
+}
+
+function selectSubject(subject, el) {
+  // Réinitialiser l'affichage
+  document.querySelectorAll('.menu-item').forEach(x => {
+    x.classList.remove('active');
+    x.setAttribute('aria-pressed', 'false');
+  });
+  
+  // Sélectionner la matière et mettre à jour l'affichage
+  el.classList.add('active');
+  el.setAttribute('aria-pressed', 'true');
+  currentTitle.textContent = subject.title;
+  cardTitle.textContent = subject.title;
+  cardDesc.textContent = subject.desc;
+
+  // Mettre à jour les ressources
+  updateResources(subject.resources);
+
+  // Petit effet de pulsation
+  el.animate([{ transform: 'scale(0.99)' }, { transform: 'scale(1)' }], {
+    duration: 250,
+    easing: 'cubic-bezier(.2,.9,.2,1)',
+  });
+}
+
+
+
+
+
+
+// --- Fonction principale de sélection ---
+function selectSubject(subject, el) {
+  // reset l'état des boutons
+  document.querySelectorAll('.menu-item').forEach(x => {
+    x.classList.remove('active');
+    x.setAttribute('aria-pressed', 'false');
+  });
+
+  // activer la matière sélectionnée
+  el.classList.add('active');
+  el.setAttribute('aria-pressed', 'true');
+  
+  // panneau de droite
+  currentTitle.textContent = subject.title;
+  cardTitle.textContent = subject.title;
+  cardDesc.textContent = subject.desc;
+
+  // mise à jour des liens utiles
+  updateResources(subject.resources);
+
+  // mise à jour de la description détaillée
+  const desc = document.getElementById('description-content');
+  if (subject.description && subject.description.trim() !== "") {
+    desc.innerHTML = subject.description;
+  } else {
+    desc.innerHTML = "<p style='color:var(--muted)'>Aucune description disponible pour cette matière.</p>";
+  }
+
+  // petit effet visuel
+  el.animate([{ transform:'scale(0.98)' }, { transform:'scale(1)' }],
+             { duration:250, easing:'cubic-bezier(.2,.9,.2,1)' });
+
+  // garder le bouton visible au centre
+  el.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+// --- Liens utiles ---
+function updateResources(resources) {
+  const resourcesContainer = document.getElementById('resources-list');
+  resourcesContainer.innerHTML = '';  
+
+  if (!resources || resources.length === 0) {
+    resourcesContainer.innerHTML = '<p style="color: var(--muted)">Aucune ressource disponible pour cette matière.</p>';
+  } else {
+    resources.forEach(resource => {
+      const div = document.createElement('div');
+      div.className = 'resource-item';
+      div.innerHTML = `<a href="${resource.link}" target="_blank">${resource.title}</a>`;
+      resourcesContainer.appendChild(div);
+    });
+  }
+}
+
+// --- Réinitialisation complète (appelée par Escape ou recherche vide) ---
+function resetPreview() {
+  cardTitle.textContent = 'Aucune matière sélectionnée';
+  cardDesc.textContent = 'Cliquez sur une matière dans le menu pour voir un aperçu rapide et des actions.';
+  currentTitle.textContent = 'Choisissez une matière';
+  // liens utiles
+  document.getElementById('resources-list').innerHTML = '<p style="color:var(--muted)">Aucune matière sélectionnée.</p>';
+  // description
+  document.getElementById('description-content').innerHTML =
+    "<p style='color:var(--muted)'>Aucun contenu affiché pour le moment. Sélectionnez une matière pour consulter sa description détaillée.</p>";
+}
+
+// --- Utilisé par Escape ---
+function deselectSubject() {
+  document.querySelectorAll('.menu-item').forEach(x => {
+    x.classList.remove('active');
+    x.setAttribute('aria-pressed', 'false');
+  });
+  resetPreview();
+}
+
+// --- Message d'attente (appelé aussi par Escape) ---
+function showSelectMessage() {
+  cardTitle.textContent = 'Sélectionner une matière';
+  cardDesc.textContent = 'Veuillez choisir une matière dans le menu pour voir un aperçu rapide et des actions.';
+  currentTitle.textContent = 'Choisissez une matière';
+  document.getElementById('resources-list').innerHTML =
+    '<p style="color:var(--muted)">Aucune matière sélectionnée.</p>';
+  document.getElementById('description-content').innerHTML =
+    "<p style='color:var(--muted)'>Aucun contenu affiché pour le moment. Sélectionnez une matière pour consulter sa description détaillée.</p>";
+} 
+  </script>
+
+<style>
+  /* Désactiver la sélection de texte */
+  body {
+    -webkit-user-select: none; /* Chrome, Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE/Edge */
+    user-select: none;         /* Standard */
+  }
+</style>
+<script>
+    // Désactiver le clic droit
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      alert("Clic droit désactivé !");
+    });
+</script>
+</body>
+</html>
