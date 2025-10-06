@@ -69,7 +69,11 @@ header{
   box-shadow:0 3px 8px rgba(0,0,0,.4); position:relative; overflow:hidden;
   transition:0.2s;
 }
-.card.done{outline:3px solid rgba(40,167,69,.4);}
+.card.done {
+  border: 2px solid #28a745;
+  box-shadow: 0 0 12px rgba(40,167,69,0.35);
+  transition: box-shadow 0.25s ease, border 0.25s ease;
+}
 .card h2{font-size:15px;color:#28a745;display:flex;justify-content:space-between;align-items:center;gap:8px}
 
 
@@ -129,6 +133,8 @@ body.sombre {
 body.sombre header{background:#1f1f1f;color:#fff;}
 body.sombre .card{background:#1f1f1f;color:#eaeaea;box-shadow:0 3px 8px rgba(0,0,0,.4);}
 body.sombre pre{background:#111;color:#00ff99;}
+body.sombre .copy-btn{background:#444;color:#fff;}
+body.sombre .validate-btn{background:#444;color:#fff;}
 body.sombre .warn{background:#2b2200;color:#ffeaa7;border-left:4px solid #d39e00;}
 body.sombre .info{background:#002626;color:#bff4ff;border-left:4px solid #00cccc;}
 
@@ -140,28 +146,10 @@ body.clair {
 body.clair header{background:#0056b3;color:#fff;}
 body.clair .card{background:#fff;color:#222;box-shadow:0 3px 8px rgba(0,0,0,.08);}
 body.clair pre{background:#111;color:#f6f8f6;}
+body.clair .copy-btn{background:#ffc107;color:#000;}
+body.clair .validate-btn{background:#17a2b8;color:#fff;}
 body.clair .warn{background:#fff3cd;color:#333;border-left:4px solid #d39e00;}
 body.clair .info{background:#d1ecf1;color:#000;border-left:4px solid #0c5460;}
-
-
-
-
-
-body.sombre .validate-btn{background:#444;color:#fff;}
-body.clair .validate-btn{background:#444;color:#fff;}
-
-body.sombre .validate-btn:hover{background:#8a8a8a;color:#fff;}
-body.clair .validate-btn:hover{background:#8a8a8a;color:#fff;}
-
-
-
-
-/* Bouton code */
-body.sombre .copy-btn{background:#17a2b8;color:#fff;}
-body.sombre .copy-btn:hover{background:#76dff2;color:#fff;}
-
-body.clair .copy-btn{background:#ffc107;color:#000;}
-body.clair .copy-btn:hover{background:#ffd966;color:#000;}
 
 /* Bouton thème */
 /*#mode-toggle{
@@ -323,6 +311,24 @@ body.sombre #step-6 .info:hover {
 
 
 
+
+body.sombre .validate-btn{background:#444;color:#fff;}
+body.clair .validate-btn{background:#444;color:#fff;}
+
+body.sombre .validate-btn:hover{background:#8a8a8a;color:#fff;}
+body.clair .validate-btn:hover{background:#8a8a8a;color:#fff;}
+
+
+
+
+/* Bouton code */
+body.sombre .copy-btn{background:#17a2b8;color:#fff;}
+body.sombre .copy-btn:hover{background:#76dff2;color:#fff;}
+
+body.clair .copy-btn{background:#ffc107;color:#000;}
+body.clair .copy-btn:hover{background:#ffd966;color:#000;}
+
+
 /* Stylisation de la zone de code pour la rendre fixe et scrollable si nécessaire */
 pre {
   background: #111 !important;
@@ -403,6 +409,219 @@ pre:focus .cmd {
 
 
 
+    #error-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #dc3545; /* rouge */
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 100;
+}
+
+
+#reset-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 10px;
+  /*transition: background 0.3s;*/
+}
+#reset-btn:hover {
+  background: #5a6268;
+}
+
+
+
+
+#progress-wrapper {
+  padding: 10px 14px;
+  background: transparent;
+}
+
+#progress-container {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+    opacity: 1;
+  transition: all 0.3s ease;
+}
+
+
+/* --- Barre de progression --- */
+#progress-container {
+  width: 100%;
+  background: #e6e6e6;              /* gris doux en clair */
+  border: none;                     /* ❌ pas de cadre en thème clair */
+  border-radius: 12px;
+  overflow: hidden;
+  height: 18px;
+  /*margin-top: 8px;*/
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.1); /* léger relief neutre */
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #20c997, #198754);
+  border-radius: 12px;
+  transition: width 0.4s ease;
+}
+
+#progress-text {
+  text-align: center;
+  margin-top: 0 px;
+  font-size: 12px;
+  color: #333;
+}
+
+/* --- Thème sombre --- */
+[data-theme="dark"] #progress-container {
+  background: #333;
+  box-shadow: inset 0 0 3px rgba(255,255,255,0.15);
+}
+
+[data-theme="dark"] #progress-text {
+  color: #ccc;
+}
+
+#progress-bar {
+  animation: fillAnim 0.6s ease;
+}
+
+@keyframes fillAnim {
+  from { width: 0; }
+  to { width: var(--width, 100%); }
+}
+
+#progress-text {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: bold;
+}
+#progress-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 6px;
+}
+#progress-toggle-label {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --- Bandeau TP réinitialisé --- */
+#reset-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #0d6efd, #0dcaf0); /* Bleu dégradé */
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  opacity: 0;               /* invisible par défaut */
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform-origin: bottom;
+  z-index: 200;
+}
+
+#reset-banner.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+
+
+
+#home-btn {
+  background: #ffffff; /* fond discret */
+  color: #007bff; /* texte bleu pour contraste */
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px; /* coins légèrement arrondis */
+  border: 2px solid #007bff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#home-btn::after {
+  content: '';
+  position: absolute;
+  top: -4px; left: -4px; right: -4px; bottom: -4px;
+  border-radius: 8px;
+  background: radial-gradient(circle, rgba(0, 123, 255, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#home-btn:hover::after {
+  opacity: 1;
+}
+
+#home-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#home-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Version responsive : rétrécir le bouton sur petits écrans */
+@media screen and (max-width: 600px) {
+  #home-btn {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+}
+
+
+
+#quiz-btn {
+  background: linear-gradient(135deg, #00b09b, #96c93d); /* vert frais motivant */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+#quiz-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, #00c49a, #a1e847);
+}
 
 
 
@@ -410,12 +629,33 @@ pre:focus .cmd {
 </head>
 <body>
 <header>
-  <div>💻 TP - Envoyer son travail</div><a href="https://intra.forge.epita.fr/epita-prepa-computer-science/" target="_blank" class="lien_tp">Programmation</a>
+  <div>💻 TP - Envoyer son travail</div>
+  <a href="https://intra.forge.epita.fr/epita-prepa-computer-science/" target="_blank" class="lien_tp">Programmation</a>
   <div id="controls">
-    <button id="mode-toggle" class="theme-btn">🌙 Mode sombre</button>&nbsp;&nbsp;&nbsp;&nbsp;
+    <button id="reset-btn" class="theme-btn">🔄 Réinitialiser le TP</button>
+    <button id="mode-toggle" class="theme-btn">🌙 Mode sombre</button>
+    <button id="settings-btn" class="theme-btn" title="Paramètres">⚙️</button>
     <button id="help-btn" class="theme-btn" title="Aide">❓</button>
+    <button id="home-btn" title="Page principale">🏠</button>
   </div>
 </header>
+
+<!-- Overlay et modal du quiz -->
+<div id="quiz-overlay"></div>
+<div id="quiz-modal">
+  <button id="quiz-close">✖</button>
+  <div id="quiz-content"></div>
+  <button id="quiz-replay">🔄 Rejouer le quiz</button>
+</div>
+<canvas id="confetti-canvas"></canvas>
+
+
+<div id="progress-wrapper">
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+    <div id="progress-text">0% — 0/6</div>
+  </div>
+</div>
 <div id="progress">
   <div id="p1" class="dot">1</div>
   <div id="p2" class="dot">2</div>
@@ -462,7 +702,7 @@ pre:focus .cmd {
   <div class="warn" style="color:red!important"><strong>&nbsp;⚠ &nbsp;&nbsp;<u>3 <code>submit</code></strong></u> autorisés au maximum <strong><em>par TP</em></strong> !</div>
   <div class="warn"><strong>⚠️ <u>2 <code>archi</code></strong></u> autorisés au maximum <strong>par heure</strong> !</div>
 
-  <div class="info">ℹ️ Seuls les fichiers commit+push sont récupérés</div>
+  <!--<div class="info">ℹ️ Seuls les fichiers commit+push sont récupérés</div>-->
 
 
 
@@ -478,6 +718,8 @@ pre:focus .cmd {
 
 <div id="copy-banner">✅ Copié !</div>
 <div id="complete-banner">🎉 Toutes les étapes sont terminées !</div>
+<div id="error-banner">⚠️ Vous devez d'abord valider l'étape précédente !</div>
+<div id="reset-banner">🔄 TP réinitialisé !</div>
 
 
 
@@ -496,10 +738,121 @@ pre:focus .cmd {
     <li><strong>📋</strong> : Copiez et modifiez les commandes Git en cliquant sur les boutons "Copier".</li>
     <li><strong>🏷️</strong> : Gérez vos tags et commits Git facilement.</li>
   </ul>
-    <br><center><a href="https://prepa.pages.epita.fr/ec/computer-science/programming/students/2030/contents/practicals/b1/prog-101-p-01/prog-101-p-01.html" target="_blank" class="lien_tp" style="margin-bottom: 0.5em;">TP n°1 - du 22/09 au 28/09</a></center>
+  <br><center><a href="https://prepa.pages.epita.fr/ec/computer-science/programming/students/2030/contents/practicals/b1/prog-101-p-01/prog-101-p-01.html" target="_blank" class="lien_tp" style="margin-bottom: 0.5em;">TP n°1 - du 22/09 au 28/09</a></center>
     <center><a href="https://prepa.pages.epita.fr/ec/computer-science/programming/students/2030/contents/practicals/b1/prog-101-p-02/prog-101-p-02.html" target="_blank" class="lien_tp" style="margin-bottom: 0.5em;">TP n°2 - du 29/09 au 05/10</a></center>
-    <div style="bottom: 10px; margin-top: 0.5em;"><small><center>v1.01</center></small></div> 
+  <div style="bottom: 10px; margin-top: 0.5em;"><small><center>v1.02</center></small></div> 
 </div>
+
+
+
+
+
+<!-- Fenêtre des paramètres -->
+<div id="settings-modal">
+  <div class="settings-content">
+    <h3>⚙️ Paramètres</h3>
+    <label class="switch">
+      <input type="checkbox" id="progress-toggle" checked>
+      <span class="slider"></span>
+      <span class="label-text">Afficher la barre de progression</span>
+    </label>
+    <button id="close-settings" class="theme-btn">Fermer</button>
+  </div>
+</div>
+
+
+
+
+<style>/* --- Fenêtre Paramètres --- */
+#settings-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.55);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+#settings-modal.active {
+  display: flex;
+}
+
+.settings-content {
+  background: #1f1f1f;
+  color: #fff;
+  border-radius: 12px;
+  padding: 20px 30px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  width: 320px;
+  animation: popIn 0.25s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Switch design */
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 10px 0 20px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  width: 40px;
+  height: 20px;
+  background-color: #555;
+  border-radius: 20px;
+  position: relative;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.switch input:checked + .slider {
+  background-color: #28a745;
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.label-text {
+  margin-left: 10px;
+  font-size: 13px;
+}
+
+/* Amélioration du bouton paramètres */
+#settings-btn {
+  background: linear-gradient(135deg, #4f8bc9, #63d1f4);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  transition: all 0.25s;
+}
+#settings-btn:hover {
+  transform: scale(1.08);
+}
+</style>
+
 
 <script>
 // Fonction pour changer les couleurs en fonction du thème
@@ -669,11 +1022,18 @@ document.addEventListener('themeChanged', setThemeStyles); // Pour un changement
         // validation séquentielle
         if(step>1){
           const prev=document.getElementById('step-'+(step-1));
-          if(!prev.classList.contains('done')) return; // précédente non validée
+          if(!prev.classList.contains('done')) {
+            const errorBanner = document.getElementById('error-banner');
+            errorBanner.style.opacity = '1';
+            setTimeout(() => { errorBanner.style.opacity = '0'; }, 1800);
+            return; // stop la validation
+}
+
         }
         card.classList.add('done');
         dot.classList.add('done');
       }
+      updateProgress();
 
       // affichage bandeau global si tout validé
       let allDone=true;
@@ -710,6 +1070,76 @@ toggleBtn.addEventListener('click', ()=>{
 });
 
 
+
+// --- Compteur de progression ---
+function updateProgress() {
+  const steps = document.querySelectorAll('.card');
+  const doneSteps = document.querySelectorAll('.card.done');
+  const percent = Math.round((doneSteps.length / steps.length) * 100);
+  document.getElementById('progress-bar').style.width = percent + '%';
+  document.getElementById('progress-text').textContent =
+    `${percent}% — ${doneSteps.length}/${steps.length}`;
+}
+
+
+// --- Réinitialiser le TP ---
+document.getElementById('reset-btn').addEventListener('click', () => {
+  // Retire les validations
+  document.querySelectorAll('.card').forEach(card => {
+    card.classList.remove('done');
+    card.style.outline = 'none';      // 🟩 enlève le cadre vert manuellement
+    card.style.boxShadow = 'none';    // 🧹 enlève aussi l’ombre verte
+  });
+
+  // Réinitialise les points de progression
+  document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('done'));
+
+  // Réinitialise la barre de progression
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('progress-text').textContent = '0% — 0/6';
+
+  // Recalcule (au cas où)
+  updateProgress();
+  document.body.offsetHeight; // Force le navigateur à redessiner
+
+
+  // Affiche le bandeau de confirmation
+  const resetBanner = document.getElementById('reset-banner');
+  resetBanner.classList.add('show');
+  setTimeout(() => resetBanner.classList.remove('show'), 1800);
+
+});
+
+
+// --- Case à cocher pour afficher/masquer la barre ---
+// --- Toggle affichage barre de progression ---
+const progressToggle = document.getElementById('progress-toggle');
+const progressContainer = document.getElementById('progress-container');
+const progressText = document.getElementById('progress-text');
+
+// fonction pour afficher/masquer proprement
+function toggleProgressBar(show) {
+  progressContainer.style.transition = 'all 0.3s ease';
+  progressContainer.style.opacity = show ? '1' : '0';
+  progressContainer.style.height = show ? '18px' : '0';
+  progressContainer.style.marginTop = show ? '10px' : '0';
+  progressText.style.display = show ? 'block' : 'none';
+  progressContainer.style.pointerEvents = show ? 'auto' : 'none';
+}
+
+// événement sur le switch
+progressToggle.addEventListener('change', (e) => {
+  toggleProgressBar(e.target.checked);
+});
+
+// afficher la barre si la case est cochée au chargement
+if (progressToggle.checked) {
+  toggleProgressBar(true);
+}
+
+
+
+
 </script>
 
 
@@ -721,20 +1151,262 @@ toggleBtn.addEventListener('click', ()=>{
       -ms-user-select: none;     /* Internet Explorer/Edge */
       user-select: none;         /* Standard */
     }
-  </style>
 
-    <script>
-    // Désactive le clic droit
-    document.addEventListener("contextmenu", function(event) {
-      event.preventDefault();  // Annule l'action de clic droit
-    });
+body, .step, header, footer {
+  transition: background 0.4s ease, color 0.4s ease;
+}
 
 
+.step.done {
+  animation: validatedGlow 0.6s ease;
+}
+
+
+@keyframes validatedGlow {
+  0% { box-shadow: 0 0 0px #28a745; }
+  50% { box-shadow: 0 0 16px #28a745; }
+  100% { box-shadow: 0 0 0px #28a745; }
+}
 
 pre:hover {
   border: 2px solid #00ff99; /* Bordure qui se colorie au survol */
   background: #1e1e1e; /* Légère modification du fond au survol */
 }
+  </style>
+
+<script>
+    // Désactive le clic droit
+    document.addEventListener("contextmenu", function(event) {
+      event.preventDefault();  // Annule l'action de clic droit
+    });
+
+// --- Ouverture/fermeture des paramètres ---
+const settingsBtn = document.getElementById('settings-btn');
+const settingsModal = document.getElementById('settings-modal');
+const closeSettings = document.getElementById('close-settings');
+
+settingsBtn.addEventListener('click', () => settingsModal.classList.add('active'));
+closeSettings.addEventListener('click', () => settingsModal.classList.remove('active'));
+
+// --- Toggle affichage barre de progression ---
+document.getElementById('progress-toggle').addEventListener('change', (e) => {
+  const visible = e.target.checked;
+  document.getElementById('progress-container').style.opacity = visible ? '1' : '0';
+  document.getElementById('progress-container').style.height = visible ? '18px' : '0';
+  document.getElementById('progress-text').style.display = visible ? 'block' : 'none';
+});
+
+
+
+
+document.getElementById('home-btn').addEventListener('click', () => {
+    window.location.href = "https://florian-croiset.github.io/epita/"; // mettre l'URL réelle
+});
   </script>
+
+
+<!-- ==================== QUIZ DU TP ==================== -->
+<!-- Overlay flouté -->
+
+
+
+
+
+<style>
+#quiz-overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  z-index: 999; display: none;
+}
+
+#quiz-modal {
+  position: fixed; top:50%; left:50%; transform: translate(-50%, -50%);
+  width: 90%; max-width: 600px; background: #fff; border-radius: 12px;
+  padding: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  z-index: 1000; display: none; color: #222;
+}
+
+body.sombre #quiz-modal { background:#1f1f1f; color:#eaeaea; }
+
+.quiz-btn, #quiz-close, #quiz-replay {
+  cursor:pointer; padding:8px 14px; border-radius:6px;
+  font-weight:700; transition: all 0.3s ease; border:none; display:block; margin:8px 0;
+}
+
+#quiz-close { background:#dc3545; color:#fff; float:right; }
+#quiz-replay { background: linear-gradient(135deg,#28a745,#7cf1a7); color:#fff; margin-top:15px; }
+
+#quiz-feedback {
+  position: fixed; top: 80px; left:50%; transform: translateX(-50%);
+  font-size:18px; font-weight:700; padding:10px 20px; border-radius:12px;
+  background: rgba(40,167,69,0.95); color:#fff; z-index:1001; display:none; text-align:center;
+}
+
+#confetti-canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999; display:none; }
+
+#git-master-badge {
+  position: fixed; bottom:16px; right:16px;
+  background: linear-gradient(135deg,#f5b700,#ff7f50); color:#fff;
+  padding: 8px 14px; border-radius:8px; font-weight:700;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index:200;
+}
+
+
+
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+// Quiz questions
+const quizQuestions = [
+  {q:"Quel fichier doit être créé à l'étape 1 ?", options:["README",".gitignore","main.py"], answer:"README"},
+  {q:"Quelle commande ajoute tous les fichiers ?", options:["git add .","git commit","git push"], answer:"git add ."},
+  {q:"Comment faire un commit avec message ?", options:["git commit -m","git push -m","git tag -m"], answer:"git commit -m"},
+  {q:"Comment envoyer vos commits sur le dépôt distant ?", options:["git push","git pull","git add"], answer:"git push"},
+  {q:"Comment créer un tag archi ?", options:["git tag -a archi","git add","git commit"], answer:"git tag -a archi"},
+  {q:"Comment récupérer les dernières modifications ?", options:["git pull","git push","git status"], answer:"git pull"},
+];
+
+// --- Variables ---
+let currentQ=0, score=0;
+let quizAttempts = parseInt(localStorage.getItem('quizAttempts')) || 0;
+
+// --- Elements ---
+const quizOverlay = document.getElementById('quiz-overlay');
+const quizModal = document.getElementById('quiz-modal');
+const quizContent = document.getElementById('quiz-content');
+const quizClose = document.getElementById('quiz-close');
+const quizReplay = document.getElementById('quiz-replay');
+
+// Créer bouton Quiz TP **à gauche du reset**
+const quizBtn = document.createElement('button');
+quizBtn.id="quiz-btn";
+quizBtn.className="theme-btn";
+quizBtn.style.marginRight="10px";
+quizBtn.innerHTML=`📋 Quiz TP <span style="font-size:10px;opacity:0.6">(${quizAttempts})</span>`;
+const resetBtn = document.getElementById('reset-btn');
+resetBtn.parentNode.insertBefore(quizBtn, resetBtn);
+
+// --- Fonctions ---
+function shuffleArray(arr){ return arr.sort(()=>Math.random()-0.5); }
+
+function showQuestion(){
+  if(currentQ >= quizQuestions.length){ finishQuiz(); return; }
+  const q = quizQuestions[currentQ];
+  const options = shuffleArray([...q.options]);
+  quizContent.innerHTML=`<p>${q.q}</p>`;
+  options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className='quiz-btn';
+    btn.textContent=opt;
+    btn.addEventListener('click',()=>checkAnswer(opt));
+    quizContent.appendChild(btn);
+  });
+}
+
+function checkAnswer(selected){
+  const correct = quizQuestions[currentQ].answer;
+  if(selected===correct){ score++; showFeedback("Bonne réponse 💪","#28a745"); }
+  else{ showFeedback("Oups 😅","#dc3545"); }
+  currentQ++;
+  setTimeout(showQuestion, 800);
+}
+
+function showFeedback(msg,bg){
+  const fb = document.getElementById('quiz-feedback') || createFeedback();
+  fb.textContent=msg; fb.style.background=bg; fb.style.display='block';
+  setTimeout(()=>fb.style.display='none',1000);
+}
+
+function createFeedback(){
+  const fb=document.createElement('div'); fb.id='quiz-feedback';
+  document.body.appendChild(fb); return fb;
+}
+
+function finishQuiz(){
+  quizContent.innerHTML=`<h3>Score : ${score}/${quizQuestions.length}</h3>`;
+  if(score>=5){
+    localStorage.setItem('gitMasterBadge','true');
+    showGitMasterBadge();
+    launchConfetti();
+    quizContent.innerHTML+=`<p>🎖️ Félicitations ! Badge Git Master obtenu !</p>`;
+  } else localStorage.removeItem('gitMasterBadge');
+}
+
+// --- Badge ---
+function showGitMasterBadge(){
+  if(localStorage.getItem('gitMasterBadge')==='true'){
+    if(!document.getElementById('git-master-badge')){
+      const badge=document.createElement('div'); badge.id='git-master-badge';
+      badge.textContent=`🥇 Git Master — Essais : ${quizAttempts}`;
+      document.body.appendChild(badge);
+    }
+  }
+}
+
+// --- Confettis ---
+function launchConfetti(){
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.style.display = 'block';
+    canvas.style.opacity = '1';
+    const myConfetti = confetti.create(canvas, { resize: true, useWorker: true });
+
+    // Explosion initiale
+    myConfetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 }
+    });
+
+    // Rafales continues
+    const interval = setInterval(() => {
+        myConfetti({
+            particleCount: 50,
+            spread: 120,
+            origin: { y: 0.6 }
+        });
+    }, 300);
+
+    // Disparaît progressivement après 4 secondes
+    setTimeout(() => {
+        clearInterval(interval);
+        let opacity = 1;
+        const fade = setInterval(() => {
+            opacity -= 0.01; // beaucoup plus lent
+            canvas.style.opacity = opacity;
+            if(opacity <= 0){
+                clearInterval(fade);
+                canvas.style.display = 'none';
+            }
+        }, 40); // intervalle plus lent
+    }, 4000); // attendre un peu avant le fondu
+}
+
+
+// --- Événements ---
+quizBtn.addEventListener('click', ()=>{
+  quizAttempts++; localStorage.setItem('quizAttempts',quizAttempts);
+  quizBtn.innerHTML=`📋 Quiz TP <span style="font-size:10px;opacity:0.6">(${quizAttempts})</span>`;
+  currentQ=0; score=0;
+  quizOverlay.style.display='block'; quizModal.style.display='block';
+  showQuestion();
+});
+
+quizClose.addEventListener('click', ()=>{
+  quizOverlay.style.display='none'; quizModal.style.display='none';
+});
+
+quizReplay.addEventListener('click', ()=>{
+  currentQ=0; score=0; showQuestion();
+});
+
+// Afficher badge au chargement
+document.addEventListener('DOMContentLoaded', showGitMasterBadge);
+
+</script>
+
+
 </body>
 </html>
