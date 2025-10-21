@@ -981,108 +981,101 @@ document.addEventListener('themeChanged', setThemeStyles); // Pour un changement
 
 <script>
 (function(){
-  const dots={};
-  for(let i=1;i<=6;i++) dots[i]=document.getElementById('p'+i);
-  const banner=document.getElementById('copy-banner');
-  const completeBanner=document.getElementById('complete-banner');
+  const dots = {};
+  for (let i = 1; i <= 6; i++) dots[i] = document.getElementById('p' + i);
+  const banner = document.getElementById('copy-banner');
+  const completeBanner = document.getElementById('complete-banner');
 
   // copier code + afficher bandeau
-  document.querySelectorAll('.copy-btn').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
       const pre = btn.closest('pre');
-      if(pre){
+      if (pre) {
         const codeEl = pre.querySelector('.cmd');
-        if(codeEl){
-          try{
-            // Copier le texte dans le div contenteditable
-try {
-  const text = codeEl.innerText.trim();
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    // Méthode moderne
-    await navigator.clipboard.writeText(text);
-  } else {
-    throw new Error('Clipboard API non disponible');
-  }
-} catch(e) {
-  console.warn('Clipboard API échouée, tentative fallback…', e);
-
-  // Fallback : textarea invisible + execCommand
-  try {
-    const fallbackTextarea = document.createElement('textarea');
-    fallbackTextarea.value = codeEl.innerText.trim();
-    fallbackTextarea.style.position = 'fixed';
-    fallbackTextarea.style.opacity = '0';
-    document.body.appendChild(fallbackTextarea);
-    fallbackTextarea.focus();
-    fallbackTextarea.select();
-    const success = document.execCommand('copy');
-    if (!success) {
-      throw new Error("document.execCommand('copy') a échoué");
-    }
-    document.body.removeChild(fallbackTextarea);
-  } catch (err) {
-    console.error('Échec de la copie avec fallback :', err);
-  }
-}          } catch(e) {
-            console.error('Erreur lors de la copie dans le presse-papiers', e);
+        if (codeEl) {
+          const text = codeEl.innerText.trim();
+          try {
+            // Méthode moderne
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(text);
+            } else {
+              throw new Error('Clipboard API non disponible');
+            }
+          } catch (e) {
+            console.warn('Clipboard API échouée, tentative fallback…', e);
+            try {
+              const fallbackTextarea = document.createElement('textarea');
+              fallbackTextarea.value = text;
+              fallbackTextarea.style.position = 'fixed';
+              fallbackTextarea.style.opacity = '0';
+              document.body.appendChild(fallbackTextarea);
+              fallbackTextarea.focus();
+              fallbackTextarea.select();
+              const success = document.execCommand('copy');
+              if (!success) {
+                throw new Error("document.execCommand('copy') a échoué");
+              }
+              document.body.removeChild(fallbackTextarea);
+            } catch (err) {
+              console.error('Échec de la copie avec fallback :', err);
+            }
           }
-          banner.style.opacity='1';
-          setTimeout(()=>{banner.style.opacity='0';},1400);
+          // Afficher le bandeau de confirmation
+          banner.style.opacity = '1';
+          setTimeout(() => { banner.style.opacity = '0'; }, 1400);
         }
       }
     });
   });
 
   // validation séquentielle et dévalidation cascade
-  document.querySelectorAll('.validate-btn').forEach((btn,i)=>{
-    btn.addEventListener('click',()=>{
-      const step=i+1;
-      const card=document.getElementById('step-'+step);
-      const dot=dots[step];
-      const done=card.classList.contains('done');
+  document.querySelectorAll('.validate-btn').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      const step = i + 1;
+      const card = document.getElementById('step-' + step);
+      const dot = dots[step];
+      const done = card.classList.contains('done');
 
-      if(done){
+      if (done) {
         // dévalidation cascade
-        for(let s=step;s<=6;s++){
-          const c=document.getElementById('step-'+s);
+        for (let s = step; s <= 6; s++) {
+          const c = document.getElementById('step-' + s);
           c.classList.remove('done');
           dots[s].classList.remove('done');
         }
       } else {
         // validation séquentielle
-        if(step>1){
-          const prev=document.getElementById('step-'+(step-1));
-          if(!prev.classList.contains('done')) {
+        if (step > 1) {
+          const prev = document.getElementById('step-' + (step - 1));
+          if (!prev.classList.contains('done')) {
             const errorBanner = document.getElementById('error-banner');
             errorBanner.style.opacity = '1';
             setTimeout(() => { errorBanner.style.opacity = '0'; }, 1800);
-            return; // stop la validation
-}
-
+            return;
+          }
         }
         card.classList.add('done');
         dot.classList.add('done');
       }
+
       updateProgress();
 
       // affichage bandeau global si tout validé
-      let allDone=true;
-      for(let s=1;s<=6;s++){
-        if(!document.getElementById('step-'+s).classList.contains('done')){
-          allDone=false;
+      let allDone = true;
+      for (let s = 1; s <= 6; s++) {
+        if (!document.getElementById('step-' + s).classList.contains('done')) {
+          allDone = false;
           break;
         }
       }
-      if(allDone){
-        completeBanner.style.opacity='1';
-        setTimeout(()=>{completeBanner.style.opacity='0';},2000);
+      if (allDone) {
+        completeBanner.style.opacity = '1';
+        setTimeout(() => { completeBanner.style.opacity = '0'; }, 2000);
       }
     });
   });
-
-  
 })();
+
 
 // initialisation thème sombre par défaut
 document.body.classList.add('sombre');
