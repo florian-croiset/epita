@@ -1,0 +1,348 @@
+<body>
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portail TP Python</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root{
+  --accent:#7b40ef;
+  --grad:linear-gradient(135deg,#7b40ef,#4ac4ff);
+  --radius:10px;
+}
+html[data-theme="dark"]{
+  --bg:#0e0d10;
+  --surface:rgba(40,40,45,.8);
+  --text-main:#f0f0f0;
+  --text-second:#a0a0a0;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 4px 18px rgba(0,0,0,.6);
+}
+html[data-theme="light"]{
+  --bg:#f6f6f8;
+  --surface:rgba(255,255,255,.9);
+  --text-main:#1b1b1b;
+  --text-second:#555;
+  --border:rgba(0,0,0,.08);
+  --shadow:0 4px 10px rgba(0,0,0,.1);
+}
+
+/* --- base layout --- */
+*{box-sizing:border-box;}
+html,body{
+  margin:0;
+  height:100%;
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text-main);
+  overflow:hidden; /* pas de molette */
+}
+body{display:flex;flex-direction:column;align-items:center;}
+
+/* --- header --- */
+header{
+  flex:0 0 auto;
+  width:100%;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 2rem;
+  height:60px;
+  background:var(--surface);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+header h1{font-size:1.25rem;margin:0;}
+#toggleTheme{
+  background:var(--grad);color:#fff;
+  border:none;border-radius:var(--radius);
+  padding:.45rem .9rem;cursor:pointer;font-weight:500;
+}
+#toggleTheme:hover{opacity:.9;}
+
+/* --- main --- */
+main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  width:100%;
+  max-width:1300px;
+  padding:1rem 1.5rem 0;
+}
+
+/* --- search --- */
+.search-bar{display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;}
+.search-bar input{
+  flex:1;
+  border:none;border-radius:var(--radius);
+  background:var(--surface);color:var(--text-main);
+  padding:.6rem 1rem;font-size:.95rem;
+  backdrop-filter:blur(20px);
+}
+.search-bar input:focus{outline:2px solid var(--accent);}
+.search-bar span{color:var(--accent);font-size:1.2rem;}
+
+/* --- Top section --- */
+.top-section{
+  display:grid;
+  grid-template-columns:1.2fr 1fr;
+  gap:1rem;
+  align-items:start;
+  margin-top: 14px;
+}
+@media(max-width:900px){.top-section{grid-template-columns:1fr;}}
+.glass{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  backdrop-filter:blur(20px);
+  box-shadow:var(--shadow);
+}
+.tp-current{position:relative;padding:1rem 1.4rem;}
+.tp-current::before{
+  content:"TP Actuel";
+  position:absolute;
+  top:-10px;left:18px;
+  background:var(--grad);color:#fff;border-radius:6px;
+  font-size:.75rem;font-weight:600;padding:.15rem .6rem;
+}
+.tp-current h3{margin:.3rem 0 .5rem;font-size:1rem;}
+.tp-current p{margin:0 0 .7rem;font-size:.85rem;color:var(--text-second);}
+.tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.6rem;}
+.tag{background:var(--grad);color:#fff;border-radius:6px;padding:.2rem .45rem;font-size:.7rem;}
+.download-btn{
+  display:inline-block;
+  background:var(--grad);color:#fff;border:none;
+  border-radius:var(--radius);
+  padding:.4rem .8rem;font-size:.8rem;font-weight:500;
+}
+.download-btn:hover{opacity:.9;}
+
+#consignes{padding:1rem 1.4rem; padding-top: 8px;}
+#consignes h2{color:var(--accent);font-size:1rem;margin-bottom:.5rem;}
+#consignes ol{margin:0;padding-left:1.2rem;font-size:.82rem;line-height:1.3rem;color:var(--text-second);}
+
+/* --- archives --- */
+#archives{margin-top:.9rem;}
+#archives h2{
+  font-size:1rem;font-weight:600;
+  border-left:4px solid var(--accent);padding-left:.5rem;margin-bottom:.5rem;
+}
+.tp-grid{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:.7rem;
+}
+@media(max-width:1250px){.tp-grid{grid-template-columns:repeat(5,1fr);}}
+@media(max-width:1050px){.tp-grid{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:850px){.tp-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.tp-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* même taille pour toutes les cartes */
+.tp-card{
+  height:110px;
+  /*  height:100px;
+*/
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:.8rem 1rem;
+}
+.tp-card h3{font-size:.8rem;margin:0 0 .35rem;font-weight:600;}
+.tp-card p{
+  font-size:.68rem;
+  color:var(--text-second);
+  margin:0 0 .4rem;
+  line-height:1.05rem;
+  flex-grow:1;
+}
+.tp-card .tags{gap:.2rem;margin-bottom:.3rem;}
+.tag.small{font-size:.6rem;padding:.1rem .35rem;}
+.tp-card .download-btn{
+  align-self:flex-start;
+  padding:.3rem .5rem;
+  font-size:.7rem;
+  line-height:1;
+}
+
+/* --- footer --- */
+footer{
+  flex:0 0 auto;
+  width:100%;
+  height:35px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  color:var(--text-second);
+  font-size:.8rem;
+  text-align:center;
+  line-height:35px;
+}
+
+/* Ajustement si écran trop petit */
+@media(max-height:750px){
+  .tp-card{height:110px;}
+  /*  .tp-card{height:90px;}
+*/
+  .tp-current p{font-size:.8rem;}
+  #consignes ol{font-size:.75rem;}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Portail TP Python</h1>
+  <button id="toggleTheme">🌓 Thème</button>
+</header>
+
+<main>
+  <div class="search-bar">
+    <span>🔍</span>
+    <input id="searchInput" type="text" placeholder="Rechercher un TP ou un langage...">
+  </div>
+
+  <div class="top-section">
+    <div class="glass tp-current" data-tags="python pandas analyse">
+      <h3>TP10 – Analyse de données avec Pandas</h3>
+      <p>Manipulation de données avec Pandas et NumPy : nettoyage, calculs et visualisation.</p>
+      <div class="tags">
+        <span class="tag">Python</span><span class="tag">Pandas</span>
+      </div>
+      <a class="download-btn" href="fichiers/tp10.py" download>⬇️ Télécharger le TP Actuel</a>
+    </div>
+
+    <section id="consignes" class="glass">
+      <h2>⚙️ Consignes d’exécution</h2>
+      <ol>
+        <li>Téléchargez le fichier du TP souhaité.</li>
+        <li>Placez‑le dans votre dossier de travail.</li>
+        <li>Exécutez : <code>python nom_du_tp.py</code></li>
+        <li>Installez les librairies nécessaires avec <code>pip install ‑r requirements.txt</code>.</li>
+      </ol>
+    </section>
+  </div>
+
+  <section id="archives">
+    <h2>Archives</h2>
+    <div class="tp-grid">
+      <div class="glass tp-card">
+        <h3>TP9 – Machine Learning</h3>
+        <p>Scikit‑Learn et modèles supervisés.</p>
+        <div class="tags"><span class="tag small">Python</span><span class="tag small">ML</span></div>
+        <a class="download-btn" href="fichiers/tp9.py" download>⬇️</a>
+      </div>
+      <div class="glass tp-card">
+        <h3>TP8 – Fichiers</h3>
+        <p>Lecture et écriture fichiers CSV.</p>
+        <div class="tags"><span class="tag small">Python</span></div>
+        <a class="download-btn" href="fichiers/tp8.py" download>⬇️</a>
+      </div>
+      <div class="glass tp-card">
+        <h3>TP7 – API</h3>
+        <p>Requêtes HTTP et JSON.</p>
+        <div class="tags"><span class="tag small">API</span></div>
+        <a class="download-btn" href="fichiers/tp7.py" download>⬇️</a>
+      </div>
+      <div class="glass tp-card">
+        <h3>TP6 – OOP</h3>
+        <p>Classes et héritage.</p>
+        <div class="tags"><span class="tag small">Python</span></div>
+        <a class="download-btn" href="fichiers/tp6.py" download>⬇️</a>
+      </div>
+      <div class="glass tp-card">
+        <h3>TP5 – Erreurs</h3>
+        <p>Gestion des exceptions.</p>
+        <div class="tags"><span class="tag small">Python</span></div>
+        <a class="download-btn" href="fichiers/tp5.py" download>⬇️</a>
+      </div>
+      <div class="glass tp-card">
+        <h3>TP3 – Modules</h3>
+        <p>Organisation du code.</p>
+        <div class="tags"><span class="tag small">Python</span></div>
+        <a class="download-btn" href="fichiers/tp3.py" download>⬇️</a>
+      </div>
+      <div class="glass tp-card">
+        <h3>TP3 – Modules</h3>
+        <p>Organisation du code.</p>
+        <div class="tags"><span class="tag small">Python</span></div>
+        <a class="download-btn" href="fichiers/tp3.py" download>⬇️</a>
+      </div>
+            <div class="glass tp-card">
+        <h3>TP3 – Modules</h3>
+        <p>Organisation du code.</p>
+        <div class="tags"><span class="tag small">Python</span></div>
+        <a class="download-btn" href="fichiers/tp3.py" download>⬇️</a>
+      </div>
+            <div class="glass tp-card">
+        <h3>TP3 – Modules</h3>
+        <p>Organisation du code.</p>
+        <div class="tags"><span class="tag small">Python</span></div>
+        <a class="download-btn" href="fichiers/tp3.py" download>⬇️</a>
+      </div>
+            <div class="glass tp-card">
+        <h3>TP3 – Modules</h3>
+        <p>Organisation du code.</p>
+        <div class="tags"><span class="tag small">Python</span></div>
+        <a class="download-btn" href="fichiers/tp3.py" download>⬇️</a>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer>© 2024 Portail TP Python</footer>
+
+<script>
+/* --- Thème --- */
+// Variables renommées pour éviter conflits avec le script précédent
+const rootEl = document.documentElement;
+const savedEl = localStorage.getItem("theme");
+if (savedEl) { rootEl.dataset.theme = savedEl; }
+else {
+  const prefEl = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  rootEl.dataset.theme = prefEl ? "dark" : "light";
+}
+document.getElementById("toggleTheme").onclick = () => {
+  const next = rootEl.dataset.theme === "light" ? "dark" : "light";
+  rootEl.dataset.theme = next; localStorage.setItem("theme", next);
+};
+/* --- Recherche --- */
+const searchEl = document.getElementById("searchInput");
+const cardsEl = document.querySelectorAll(".tp-card,.tp-current");
+searchEl.addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  cardsEl.forEach(c => {
+    const t = (c.innerText + c.dataset?.tags || "").toLowerCase();
+    c.style.display = t.includes(q) ? "flex" : "none";
+  });
+});
+</script>
+<script>                        	
+/* --- Thème --- */
+const root=document.documentElement;
+const saved=localStorage.getItem("theme");
+if(saved){root.dataset.theme=saved;}
+else{
+  const pref=window.matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme=pref?"dark":"light";
+}
+document.getElementById("toggleTheme").onclick=()=>{
+  const next=root.dataset.theme==="light"?"dark":"light";
+  root.dataset.theme=next;localStorage.setItem("theme",next);
+};
+/* --- Recherche --- */
+const search=document.getElementById("searchInput");
+const cards=document.querySelectorAll(".tp-card,.tp-current");
+search.addEventListener("input",e=>{
+  const q=e.target.value.toLowerCase();
+  cards.forEach(c=>{
+    const t=(c.innerText+c.dataset?.tags||"").toLowerCase();
+    c.style.display=t.includes(q)?"flex":"none";
+  });
+});
+
+</script>
+</body>
+</html>
