@@ -986,72 +986,50 @@ document.addEventListener('themeChanged', setThemeStyles); // Pour un changement
   const banner=document.getElementById('copy-banner');
   const completeBanner=document.getElementById('complete-banner');
 
-  // copier code + afficher bandeau
-  document.querySelectorAll('.copy-btn').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const pre = btn.closest('pre');
-      if(pre){
-        const codeEl = pre.querySelector('.cmd');
-        if(codeEl){
-          try{
-            // Copier le texte dans le div contenteditable
-            await navigator.clipboard.writeText(codeEl.innerText.trim());
-          } catch(e) {
-            console.error('Erreur lors de la copie dans le presse-papiers', e);
+ document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const pre = btn.closest('pre');
+    if (pre) {
+      const codeEl = pre.querySelector('.cmd');
+      if (codeEl) {
+        const text = codeEl.innerText.trim();
+
+        try {
+          // Tentative avec Clipboard API
+          await navigator.clipboard.writeText(text);
+        } catch (err) {
+          console.warn('Clipboard API échouée, tentative fallback...', err);
+
+          // Fallback : textarea + execCommand
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed'; // évite les scrolls
+          textarea.style.opacity = '0'; // invisible
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          try {
+            const success = document.execCommand('copy');
+            if (!success) throw new Error("execCommand('copy') a échoué");
+          } catch (err2) {
+            console.error('Fallback de copie échoué :', err2);
           }
-          banner.style.opacity='1';
-          setTimeout(()=>{banner.style.opacity='0';},1400);
+          document.body.removeChild(textarea);
+        }
+
+        // Afficher le bandeau de confirmation
+        const banner = document.getElementById('copy-banner');
+        if (banner) {
+          banner.style.opacity = '1';
+          setTimeout(() => {
+            banner.style.opacity = '0';
+          }, 1400);
         }
       }
-    });
+    }
   });
+});
 
-  // validation séquentielle et dévalidation cascade
-  document.querySelectorAll('.validate-btn').forEach((btn,i)=>{
-    btn.addEventListener('click',()=>{
-      const step=i+1;
-      const card=document.getElementById('step-'+step);
-      const dot=dots[step];
-      const done=card.classList.contains('done');
-
-      if(done){
-        // dévalidation cascade
-        for(let s=step;s<=6;s++){
-          const c=document.getElementById('step-'+s);
-          c.classList.remove('done');
-          dots[s].classList.remove('done');
-        }
-      } else {
-        // validation séquentielle
-        if(step>1){
-          const prev=document.getElementById('step-'+(step-1));
-          if(!prev.classList.contains('done')) {
-            const errorBanner = document.getElementById('error-banner');
-            errorBanner.style.opacity = '1';
-            setTimeout(() => { errorBanner.style.opacity = '0'; }, 1800);
-            return; // stop la validation
-}
-
-        }
-        card.classList.add('done');
-        dot.classList.add('done');
-      }
-      updateProgress();
-
-      // affichage bandeau global si tout validé
-      let allDone=true;
-      for(let s=1;s<=6;s++){
-        if(!document.getElementById('step-'+s).classList.contains('done')){
-          allDone=false;
-          break;
-        }
-      }
-      if(allDone){
-        completeBanner.style.opacity='1';
-        setTimeout(()=>{completeBanner.style.opacity='0';},2000);
-      }
-    });
-  });
 
   
 })();
