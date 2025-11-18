@@ -106,6 +106,6 @@ if __name__ == "__main__":
     prenom = input("Prénom (en minuscule) : ").strip().lower()
     nom = input("Nom (en minuscule) : ").strip().lower()
 
-    folder_name = f"prog-102-p-02-2030-{prenom}.{nom}"
+    folder_name = f"epita-prepa-computer-science-prog-102-p-02-2030-{prenom}.{nom}"
 
     create_structure(folder_name, prenom, nom)
