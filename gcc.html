@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tutoriel interactif — Installer GCC 64-bit (MSYS2 + Git Bash)</title>
+<style>
+:root{
+  --bg:#0e1320;
+  --card:#131a2b;
+  --accent:#00bcd4;
+  --muted:#98a3b9;
+  --ok:#10b981;
+  --danger:#ef4444;
+  --gradient:linear-gradient(90deg, #06b6d4, #3b82f6);
+}
+
+/* Plein écran */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:linear-gradient(180deg,#0a1122 0%, #071a2a 100%);
+  color:#e6eef6;
+  display:flex;
+  flex-direction:column;
+}
+
+.wrap{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:24px;
+  max-width:980px;
+  margin:0 auto;
+  width:100%;
+}
+
+header{display:flex;gap:16px;align-items:center;}
+h1{margin:0;font-size:22px;background:var(--gradient);-webkit-background-clip:text;color:transparent;}
+
+.card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.05);
+  padding:22px;
+  border-radius:14px;
+  margin-top:20px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.4);
+  transition:all .3s ease;
+}
+.card:not(.hidden):hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.55);
+}
+.step{display:grid;grid-template-columns:1fr 220px;gap:16px;align-items:start;}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+button{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.1);
+  padding:10px 14px;
+  border-radius:8px;
+  color:inherit;
+  cursor:pointer;
+  transition:all .25s ease;
+}
+button:hover{
+  background:rgba(255,255,255,0.05);
+}
+.primary{
+  border:none;
+  background:var(--gradient);
+  color:#fff;
+  font-weight:600;
+  box-shadow:0 4px 12px rgba(6,182,212,0.3);
+}
+.primary:hover{
+  box-shadow:0 6px 16px rgba(6,182,212,0.4);
+  transform:translateY(-1px);
+}
+.success{border-color:var(--ok);}
+.back-btn{
+  background:linear-gradient(90deg,#334155,#1e293b);
+  color:#cbd5e1;
+  margin-right:auto;
+}
+pre{
+  background:#0a0f1a;
+  padding:12px;
+  border-radius:8px;
+  overflow:auto;
+  margin:8px 0;
+  color:#dff7fb;
+}
+code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
+.muted{color:var(--muted);font-size:13px;}
+footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  padding:16px 0;
+  border-top:1px solid rgba(255,255,255,0.09);
+}
+@media (max-width:820px){.step{grid-template-columns:1fr} .card{padding:16px}}
+.hidden{display:none}
+.status{display:inline-block;padding:6px 8px;border-radius:999px;font-weight:600}
+.ok{background:rgba(16,185,129,0.12);color:var(--ok);border:1px solid rgba(16,185,129,0.12)}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Tutoriel interactif — Installer GCC 64-bit (MSYS2 ucrt64)</h1>
+    <div class="muted">Configuration pas-à-pas pour Git Bash — Windows 64-bit</div>
+  </div>
+</header>
+
+<!-- STEP 0 -->
+<div class="card" id="step-0">
+  <h2>Prérequis</h2>
+  <ul>
+    <li>Windows 64-bit</li>
+    <li>Droits administrateur recommandés</li>
+    <li>Connexion Internet</li>
+    <li>Git Bash installé</li>
+  </ul>
+  <p class="muted">Ce tutoriel ne fait rien automatiquement : suivez les instructions à l’écran.</p>
+  <div class="controls">
+    <button class="primary" data-show="step-1">✅ J'ai vérifié — Continuer</button>
+    <button onclick="window.open('https://git-scm.com/download/win','_blank')">Télécharger Git Bash</button>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="card hidden" id="step-1">
+  <h2>Étape 1 — Télécharger MSYS2</h2>
+  <p>Téléchargez l’installateur officiel (x86_64) :</p>
+  <pre id="download-link">https://github.com/msys2/msys2-installer/releases/download/2024-12-08/msys2-x86_64-20241208.exe</pre>
+  <div class="controls">
+    <button class="back-btn" data-back="step-0">⬅ Revenir</button>
+    <button onclick="copyText('#download-link')">Copier le lien</button>
+    <button onclick="window.open(document.getElementById('download-link').innerText,'_blank')">Ouvrir le lien</button>
+    <button class="primary" data-show="step-2">J'ai téléchargé — Suivant</button>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="card hidden" id="step-2">
+  <h2>Étape 2 — Installer MSYS2</h2>
+  <ol>
+    <li>Exécutez <code>msys2-x86_64-20241208.exe</code>.</li>
+    <li>Installez dans <code>C:\msys64</code> (par défaut recommandé).</li>
+    <li>Lancez MSYS2 à la fin.</li>
+  </ol>
+  <div class="controls">
+    <button class="back-btn" data-back="step-1">⬅ Revenir</button>
+    <button class="primary" data-show="step-3">Installé — Étape suivante</button>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="card hidden" id="step-3">
+  <h2>Étape 3 — Installer GCC via pacman</h2>
+  <p>Ouvrez <b>MSYS2 MinGW UCRT64</b> et exécutez :</p>
+  <pre id="cmd-pacman">pacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain</pre>
+  <div class="controls">
+    <button class="back-btn" data-back="step-2">⬅ Revenir</button>
+    <button onclick="copyText('#cmd-pacman')">Copier la commande</button>
+    <button class="primary" data-show="step-4">Commande exécutée — Suivant</button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="card hidden" id="step-4">
+  <h2>Étape 4 — Ajouter au PATH</h2>
+  <p>Ajoutez ceci à votre variable d'environnement utilisateur <b>Path</b> :</p>
+  <pre id="path-entry">C:\msys64\ucrt64\bin</pre>
+  <div class="controls">
+    <button class="back-btn" data-back="step-3">⬅ Revenir</button>
+    <button onclick="copyText('#path-entry')">Copier la valeur</button>
+    <button class="primary" data-show="step-5">Modifié — Suivant</button>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="card hidden" id="step-5">
+  <h2>Étape 5 — Vérifier dans Git Bash</h2>
+  <pre id="test-commands">which gcc
+gcc --version</pre>
+  <p class="muted">Le chemin doit être <code>/c/msys64/ucrt64/bin/gcc.exe</code></p>
+  <div class="controls">
+    <button class="back-btn" data-back="step-4">⬅ Revenir</button>
+    <button onclick="copyText('#test-commands')">Copier les commandes</button>
+    <button class="primary" data-show="step-6">Vérifié — Étape suivante</button>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="card hidden" id="step-6">
+  <h2>Étape 6 — Test de compilation</h2>
+  <pre id="hello-code">cat > hello.c <<'EOF'
+#include <stdio.h>
+int main(){ printf("Bonjour MSYS2+GCC\\n"); return 0; }
+EOF
+gcc -o hello.exe hello.c
+./hello.exe
+</pre>
+  <div class="controls">
+    <button class="back-btn" data-back="step-5">⬅ Revenir</button>
+    <button onclick="copyText('#hello-code')">Copier le test</button>
+    <button class="primary" data-show="final-step">Compilation réussie — Terminer</button>
+  </div>
+</div>
+
+<!-- FIN -->
+<div class="card hidden" id="final-step">
+  <h2>🎉 Félicitations !</h2>
+  <p>Tous les éléments (MSYS2, GCC 64-bit ucrt64, PATH, Git Bash) sont installés et fonctionnels.</p>
+  <p>Vous pouvez compiler vos projets C/C++ dès maintenant.</p>
+  <div class="controls">
+    <button class="back-btn" data-back="step-6">⬅ Revenir</button>
+  </div>
+</div>
+
+</div>
+<footer>© 2025 _</footer>
+
+<script>
+// Fonctions utilitaires
+function copyText(sel){
+  const el=document.querySelector(sel);
+  if(!el)return;
+  navigator.clipboard.writeText(el.innerText.trim()).then(()=>flash('Copié !','ok'));
+}
+function flash(msg,type){
+  const b=document.createElement('div');
+  b.textContent=msg;
+  b.style.position='fixed';
+  b.style.right='18px';
+  b.style.bottom='18px';
+  b.style.padding='10px 14px';
+  b.style.borderRadius='10px';
+  b.style.zIndex=9999;
+  b.style.background= type==='ok' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
+  b.style.color='#a8f3cc';
+  document.body.appendChild(b);
+  setTimeout(()=>b.remove(),2000);
+}
+function showStep(id){
+  document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
+  const el=document.getElementById(id);
+  if(el){ el.classList.remove('hidden'); el.scrollIntoView({behavior:'smooth'}); }
+}
+// Navigation avant/arrière
+document.addEventListener('click', e=>{
+  const btn=e.target.closest('button[data-show],button[data-back]');
+  if(!btn)return;
+  if(btn.dataset.show){ showStep(btn.dataset.show); }
+  if(btn.dataset.back){ showStep(btn.dataset.back); }
+});
+// Init
+showStep('step-0');
+</script>
+</body>
+</html>
