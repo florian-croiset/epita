@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pointers in C</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+<link id="hljs-theme" rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
+<style>
+:root {
+  --bg:#1f1f20;
+  --fg:#eaeaea;
+  --accent:#10a37f;
+  --border:#2c2c2c;
+  --surface:#252526;
+  --panel:#2e2f33;
+  --code:#1e1e1e;
+  --link:#27c4a7;
+  --shadow:0 3px 12px rgba(0,0,0,.25);
+}
+body.light {
+  --bg:#f9f9fa;
+  --fg:#1e1f22;
+  --accent:#008066;
+  --border:#ddd;
+  --surface:#ffffff;
+  --panel:#f5f5f5;
+  --code:#f1f1f1;
+  --link:#007065;
+  --shadow:0 2px 8px rgba(0,0,0,.08);
+}
+html,body{
+  margin:0;
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--fg);
+  line-height:1.75;
+  transition:background .3s,color .3s;
+}
+
+/* --- BARRE SUPÉRIEURE --- */
+#topbar{
+  position:fixed;
+  top:0; left:0; right:0;
+  height:65px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow);
+  padding:0 20px;
+  z-index:3000;
+}
+.top-left, .top-right {display:flex;align-items:center;}
+#topbar button{
+  border:none;
+  border-radius:8px;
+  padding:6px 10px;
+  margin-left:6px;
+  cursor:pointer;
+  transition:.2s;
+  background:var(--panel);
+  color:var(--fg);
+  border:1px solid var(--border);
+}
+#topbar button:hover{background:var(--accent);color:white;}
+#menu-toggle{
+  background:var(--accent);
+  color:#fff;
+  font-weight:600;
+}
+.lang.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+#theme-toggle{background:var(--accent);color:white;border:none;}
+
+/* --- NAV / TOC --- */
+nav#sidebar{
+  width:250px;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  padding:80px 1.8rem 2rem;
+  position:fixed;
+  top:0; left:0;
+  height:100vh;
+  overflow-y:auto;
+  transition:transform .3s;
+  box-shadow:var(--shadow);
+  z-index:2000;
+}
+nav#sidebar.closed{transform:translateX(-100%);}
+nav h2{
+  font-size:.9em;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--accent);
+  margin-top:0;
+  margin-bottom:1rem;
+}
+nav ul{list-style:none;padding-left:1em;margin:.3em 0;}
+nav a{
+  color:var(--link);
+  text-decoration:none;
+  display:block;
+  font-size:.9em;
+  padding:.3em 0;
+  border-left:2px solid transparent;
+  transition:.2s;
+}
+nav a:hover{color:var(--accent);}
+nav a.active{
+  color:var(--accent);
+  border-left:3px solid var(--accent);
+  background:rgba(255,255,255,.03);
+}
+
+/* --- MAIN --- */
+main{
+  width:calc(100% - 250px);
+  margin-left:250px;
+  margin-top:80px;
+  padding:30px 6%;
+  box-sizing:border-box;
+  transition:width .3s ease,margin-left .3s ease;
+}
+@media(max-width:900px){main{width:100%;margin-left:0;}}
+nav.closed + main,nav.closed~main{margin-left:0;width:100%;}
+
+/* --- HEADER DU CONTENU (titre/sous-titre) --- */
+#page-header{
+  position:relative;
+  text-align:center;
+  margin:2rem auto 2.5rem;
+  z-index:2500;
+}
+#page-header #subtitle{
+  font-size:1em;
+  font-style:italic;
+  opacity:0.7;
+  margin-bottom:.2em;
+  color:var(--fg);
+}
+#page-header h1{
+  margin:0;
+  font-size:2.7em;
+  font-weight:700;
+  color:var(--accent);
+}
+#page-header .line{
+  display:block;
+  width:100px;
+  height:4px;
+  background:var(--accent);
+  margin:.6rem auto 0;
+  border-radius:2px;
+  opacity:.85;
+}
+
+/* --- TEXTE / CODE --- */
+h2,h3{color:var(--accent);border-bottom:1px solid var(--border);
+padding-bottom:.25em;margin-top:1.4em;}/*2.4em*/
+a{color:var(--link);text-decoration:none;}a:hover{text-decoration:underline;}
+pre{background:var(--code);border-radius:8px;padding:1rem;position:relative;
+overflow-x:auto;margin:1.4em 0;box-shadow:var(--shadow);}
+.copy-btn{position:absolute;top:8px;right:8px;background:var(--accent);
+border:none;color:white;border-radius:4px;padding:.3em .6em;font-size:.75em;
+cursor:pointer;opacity:.9;}
+.copy-btn:hover{opacity:1;transform:scale(1.05);}
+table{border-collapse:collapse;width:100%;margin:1.2em 0;font-size:.95em;}
+th,td{padding:.5em .8em;border:1px solid var(--border);}
+thead{background:var(--accent);color:#fff;font-weight:600;}
+tbody tr:nth-child(odd){background:rgba(255,255,255,0.03);}
+tbody tr:hover{background:rgba(255,255,255,0.07);transition:.15s;}
+
+/* --- PRINT --- */
+@media print{@page{size:A4 portrait;margin:0.8cm;}
+body{background:white!important;color:black!important;font-size:10pt!important;line-height:1.4!important;}
+nav,#topbar{display:none!important;}
+main{margin:0;padding:0.5cm 1cm;}
+pre{background:#f7f7f7!important;color:#111!important;border:1px solid #ccc!important;
+font-size:.8em!important;padding:.4em!important;}
+}
+</style>
+</head>
+
+<body class="dark">
+<header id="topbar">
+  <div class="top-left">
+    <button id="menu-toggle">☰ Table des matières</button>
+  </div>
+  <div class="top-right">
+    <button id="theme-toggle">🌙</button>
+    <button id="pdf-btn">📄 PDF</button>
+    <button id="btn-fr" class="lang active">🇫🇷 FR</button>
+    <button id="btn-en" class="lang">🇬🇧 EN</button>
+  </div>
+</header>
+
+<nav id="sidebar">
+  <h2>Table des matières</h2>
+  <div class="toc-fr" style="display:block;"><details open><summary>Introduction</summary><ul>
+</ul></details>
+<details open><summary>Qu’est-ce qu’un pointeur ?</summary><ul>
+</ul></details>
+<details open><summary>Cellules mémoire et adresses</summary><ul>
+</ul></details>
+<details open><summary>Variables et mémoire</summary><ul>
+</ul></details>
+<details open><summary>Déclaration et initialisation</summary><ul>
+</ul></details>
+<details open><summary>Affichage des pointeurs</summary><ul>
+</ul></details>
+<details open><summary>Déréférencement des pointeurs</summary><ul>
+</ul></details>
+<details open><summary>Pointeurs nuls</summary><ul>
+</ul></details>
+<details open><summary>Passage de paramètres</summary><ul>
+<li><a href="#passage-par-valeur">Passage par valeur</a></li>
+<li><a href="#passage-par-adresse">Passage par adresse</a></li>
+</ul></details>
+<details open><summary>Retourner plusieurs résultats via des pointeurs</summary><ul>
+</ul></details>
+<details open><summary>Arithmétique des pointeurs</summary><ul>
+</ul></details>
+<details open><summary>Taille des pointeurs</summary><ul>
+</ul></details>
+<details open><summary>Pointeurs et tableaux</summary><ul>
+</ul></details>
+<details open><summary>Pointeurs et chaînes de caractères</summary><ul>
+</ul></details>
+<details open><summary>Le mot-clé const</summary><ul>
+</ul></details>
+<details open><summary>À propos des déclarations multiples</summary><ul>
+</ul></details>
+<details open><summary>Pointeurs vers des pointeurs</summary><ul>
+</ul></details>
+<details open><summary>Tableaux de chaînes de caractères</summary><ul>
+</ul></details>
+<details open><summary>Erreurs courantes avec les pointeurs</summary><ul>
+</ul></details>
+<details open><summary>Débogage avec -fsanitize=address</summary><ul>
+</ul></details>
+<details open><summary>Débogage avec GDB</summary><ul>
+<li><a href="#navigation-dans-le-programme">Navigation dans le programme</a></li>
+<li><a href="#inspection-des-variables">Inspection des variables</a></li>
+</ul></details>
+<details open><summary>Exemple de débogage</summary><ul>
+</ul></details>
+<details open><summary>Références</summary><ul>
+</ul></details></div>
+  <div class="toc-en" style="display:none;"><details open><summary>Introduction</summary><ul>
+</ul></details>
+<details open><summary>What is a Pointer?</summary><ul>
+</ul></details>
+<details open><summary>Memory Cells and Addresses</summary><ul>
+</ul></details>
+<details open><summary>Variables and Memory</summary><ul>
+</ul></details>
+<details open><summary>Declaration and Initialization</summary><ul>
+</ul></details>
+<details open><summary>Printing Pointers</summary><ul>
+</ul></details>
+<details open><summary>Dereferencing Pointers</summary><ul>
+</ul></details>
+<details open><summary>Null Pointers</summary><ul>
+</ul></details>
+<details open><summary>Passing Parameters</summary><ul>
+<li><a href="#passing-pamareters-by-value">Passing Pamareters by Value</a></li>
+<li><a href="#passing-parameters-by-address">Passing Parameters by Address</a></li>
+</ul></details>
+<details open><summary>Returning Multiple Results via Pointers</summary><ul>
+</ul></details>
+<details open><summary>Pointer Arithmetic</summary><ul>
+</ul></details>
+<details open><summary>Size of Pointers</summary><ul>
+</ul></details>
+<details open><summary>Pointers and Arrays</summary><ul>
+</ul></details>
+<details open><summary>Pointers and Strings</summary><ul>
+</ul></details>
+<details open><summary>The const Keyword</summary><ul>
+</ul></details>
+<details open><summary>About Multiple Declarations</summary><ul>
+</ul></details>
+<details open><summary>Pointers to Pointers</summary><ul>
+</ul></details>
+<details open><summary>Arrays of Strings</summary><ul>
+</ul></details>
+<details open><summary>Common Pointer Errors</summary><ul>
+</ul></details>
+<details open><summary>Debugging with -fsanitize=address</summary><ul>
+</ul></details>
+<details open><summary>Debugging with GDB</summary><ul>
+<li><a href="#moving-inside-the-program">Moving inside the program</a></li>
+<li><a href="#inspect-variables">Inspect variables</a></li>
+</ul></details>
+<details open><summary>Debugging Example</summary><ul>
+</ul></details></div>
+</nav>
+
+<main>
+  <header id="page-header">
+    <div id="subtitle">Addresses, Memory, Dereferencing, Passing Parameters, Pointers Arithmetic, Common Errors, GDB — PROG-102-L-04</div>
+    <h1>Pointers in C</h1>
+    <span class="line"></span>
+  </header>
+  <div id="content-fr" style="display:block;"><h2 id="introduction">Introduction</h2>
+<ul>
+<li>Les <strong>pointeurs</strong> sont un concept central du langage C.  </li>
+<li>Ils permettent un <strong>accès direct à la mémoire</strong>.  </li>
+<li>Une mauvaise utilisation peut entraîner des bogues subtils et graves.  </li>
+</ul>
+<hr/>
+<h2 id="qu’est-ce-qu’un-pointeur ?">Qu’est-ce qu’un pointeur ?</h2>
+<ul>
+<li>Un <strong>pointeur</strong> est une variable qui contient une <strong>adresse mémoire</strong>.  </li>
+<li>Une adresse mémoire identifie l’emplacement où une valeur est stockée.  </li>
+<li>Ce sont des <strong>entiers non signés de longueur fixe</strong>.  </li>
+<li>Les pointeurs ont des types comme <code>int*</code>, <code>char*</code>, etc., indiquant le <strong>type pointé</strong>.  </li>
+</ul>
+<hr/>
+<h2 id="cellules-mémoire-et-adresses">Cellules mémoire et adresses</h2>
+<p><img alt="Représentation mémoire" src="img/memory_representation.jpg"/> </p>
+<hr/>
+<h2 id="variables-et-mémoire">Variables et mémoire</h2>
+<p><img alt="Représentation mémoire" src="img/variable_definition.jpg"/> </p>
+<hr/>
+<h2 id="déclaration-et-initialisation">Déclaration et initialisation</h2>
+<pre><code class="language-c">int i = 0x12345678;
+int* p = &amp;i;
+</code></pre>
+<hr/>
+<h2 id="affichage-des-pointeurs">Affichage des pointeurs</h2>
+<pre><code class="language-c">int i = 0x12345678;
+int* p = &amp;i;
+
+printf("p = %p\n", p);
+</code></pre>
+<p>Utilisez <strong><code>%p</code></strong> dans <code>printf()</code> pour afficher une adresse de pointeur.  </p>
+<hr/>
+<h2 id="déréférencement-des-pointeurs">Déréférencement des pointeurs</h2>
+<pre><code class="language-c">int i = 42;
+
+int* p = &amp;i;
+printf("*p = %i\n", *p);
+
+*p = 72;
+printf("i = %i\n", i);
+</code></pre>
+<p>Lorsque <code>p</code> pointe vers <code>i</code>, <code>*p</code> fait référence à <code>i</code>.  </p>
+<hr/>
+<h2 id="pointeurs-nuls">Pointeurs nuls</h2>
+<p>Utilisez <code>NULL</code> pour les pointeurs qui ne pointent vers aucun objet valide.<br/>
+<code>NULL</code> est une constante définie dans <code>&lt;stddef.h&gt;</code>, <code>&lt;stdlib.h&gt;</code> et <code>&lt;stdio.h&gt;</code>.<br/>
+Ne jamais déréférencer un pointeur <code>NULL</code>.  </p>
+<pre><code class="language-c">int* p0; // Non initialisé
+int* p1 = NULL; // Défini à NULL
+int* p2 = 0; // Défini à NULL (déconseillé)
+printf("p0 = %p\n", p0); // p0 = adresse aléatoire -&gt; comportement indéfini
+printf("p1 = %p\n", p1); // p1 = (nil)
+printf("p2 = %p\n", p2); // p2 = (nil)
+</code></pre>
+<p>❗ Toujours initialiser les pointeurs avant de les utiliser.  </p>
+<hr/>
+<h2 id="passage-de-paramètres">Passage de paramètres</h2>
+<p>Passage de paramètres par :  </p>
+<ul>
+<li><strong>valeur</strong> (copie)  </li>
+<li><strong>adresse</strong> (utilisant des pointeurs)  </li>
+</ul>
+<hr/>
+<h3 id="passage-par-valeur">Passage par valeur</h3>
+<pre><code class="language-c">void swap(int a, int b)
+{
+    int temp = a;
+    a = b;
+    b = temp;
+}
+int x = 1, y = 9;
+printf("x = %i, y = %i\n", x, y); // x = 1, y = 9
+swap(x, y);
+printf("x = %i, y = %i\n", x, y); // x = 1, y = 9
+</code></pre>
+<p>Aucun changement, car seules des copies sont échangées.  </p>
+<hr/>
+<h3 id="passage-par-adresse">Passage par adresse</h3>
+<pre><code class="language-c">void swap_using_pointers(int* a, int* b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+int x = 1, y = 9;
+printf("x = %i, y = %i\n", x, y); // x = 1, y = 9
+swap_using_pointers(&amp;x, &amp;y);
+printf("x = %i, y = %i\n", x, y); // x = 9, y = 1
+</code></pre>
+<p>✅ Les valeurs sont échangées correctement.  </p>
+<hr/>
+<h2 id="retourner-plusieurs-résultats-via-des-pointeurs">Retourner plusieurs résultats via des pointeurs</h2>
+<pre><code class="language-c">char* euclidean_div(int a, int b, int* quotient, int* remainder)
+{
+    if (b == 0)
+    {
+        *quotient = 0;
+        *remainder = 0;
+        return "Erreur";
+    }
+    else
+    {
+        *quotient = a / b;
+        *remainder = a % b;
+        return "OK";
+    }
+}
+
+int q = 0;
+int r = 0;
+char* err = NULL;
+err = euclidean_div(10, 4, &amp;q, &amp;r);
+printf("10/4 : q = %i et r = %i (%s)\n", q, r, err);
+// 10/4 : q = 2 et r = 2 (OK)
+err = euclidean_div(10, 0, &amp;q, &amp;r);
+printf("10/0 : q = %i et r = %i (%s)\n", q, r, err);
+// 10/0 : q = 0 et r = 0 (Erreur)
+</code></pre>
+<hr/>
+<h2 id="arithmétique-des-pointeurs">Arithmétique des pointeurs</h2>
+<ul>
+<li>Les additions et soustractions sont permises sur les pointeurs.  </li>
+<li><code>p + 1</code> ne pointe pas sur l’octet suivant mais sur la <strong>valeur suivante</strong>.  </li>
+<li>Le nombre d’octets dépend du type pointé.  </li>
+</ul>
+<pre><code class="language-c">char c = 0x42;
+char* p = &amp;c;
+printf("sizeof(c) = %zu\n", sizeof(c)); // sizeof(c) = 1
+printf(" p = %p\n", p);
+printf(" p + 1 = %p\n", p + 1);
+</code></pre>
+<p><img alt="Arithmétique des pointeurs (char)" src="img/pointer_char.jpg"/></p>
+<pre><code class="language-c">int i = 0x42;
+int* p = &amp;i;
+printf("sizeof(i) = %zu\n", sizeof(i)); // sizeof(i) = 4
+printf(" p = %p\n", p);
+printf(" p + 1 = %p\n", p + 1);
+</code></pre>
+<p><img alt="Arithmétique des pointeurs (int)" src="img/pointer_int.jpg"/></p>
+<hr/>
+<h2 id="taille-des-pointeurs">Taille des pointeurs</h2>
+<p>Tous les pointeurs ont la <strong>même taille</strong>, quel que soit leur type.<br/>
+C’est généralement la taille du type <code>size_t</code>.  </p>
+<pre><code class="language-c">char* pc;  // sizeof(pc) = 8
+int* pi;   // sizeof(pi) = 8
+double* pd;// sizeof(pd) = 8
+void* pv;  // sizeof(pv) = 8
+</code></pre>
+<hr/>
+<h2 id="pointeurs-et-tableaux">Pointeurs et tableaux</h2>
+<p>Une variable tableau :
+- Est une <strong>adresse constante</strong>.<br/>
+- Pointe sur <strong>l’ensemble du tableau</strong> (pas uniquement le premier élément).<br/>
+- L’opérateur <code>sizeof()</code> retourne la taille en octets du tableau.  </p>
+<pre><code class="language-c">int a[] = { 72, 42, 16 };
+int* p = a;
+printf(" a = %p\n", a);
+printf("&amp;a = %p\n", &amp;a);
+printf(" p = %p\n", p);
+printf("&amp;p = %p\n", &amp;p);
+</code></pre>
+<pre><code class="language-c">a[0] = p[0] = *(a + 0) = *(p + 0) = 72
+a[1] = p[1] = *(a + 1) = *(p + 1) = 42
+a[2] = p[2] = *(a + 2) = *(p + 2) = 16
+sizeof(a) = 12
+sizeof(p) = 8
+</code></pre>
+<pre><code class="language-c">int sum(int a[], size_t len);
+int sum(int* a, size_t len);
+</code></pre>
+<hr/>
+<h2 id="pointeurs-et-chaînes-de-caractères">Pointeurs et chaînes de caractères</h2>
+<pre><code class="language-c">char a[] = "Hello";
+char* b = "World";
+printf("%s %s\n", a, b); // Hello World
+</code></pre>
+<hr/>
+<h2 id="le-mot-clé-const">Le mot-clé <code>const</code></h2>
+<pre><code class="language-c">int a[] = { 72, 42, 16 };
+const int* p = a;
+p++;       // OK
+*p = 28;   // Erreur de compilation
+</code></pre>
+<pre><code class="language-c">int a[] = { 72, 42, 16 };
+int* const p = a;
+p++;       // Erreur de compilation
+*p = 28;   // OK
+</code></pre>
+<pre><code class="language-c">const int* const p = a; // ni mouvement ni modification
+p++;    // Erreur
+*p = 28;// Erreur
+</code></pre>
+<hr/>
+<h2 id="à-propos-des-déclarations-multiples">À propos des déclarations multiples</h2>
+<pre><code class="language-c">int* a;
+int *a;
+int* a, b;
+int *a, b;
+int* a, *b;
+int* a;
+int b;
+int* a, b; // n’est PAS équivalent à :
+int* a;
+int* b;
+</code></pre>
+<hr/>
+<h2 id="pointeurs-vers-des-pointeurs">Pointeurs vers des pointeurs</h2>
+<pre><code class="language-c">int i = 42;
+int* p = &amp;i;
+int** pp = &amp;p;
+printf(" i = *p = *pp = %i\n", i);
+printf("&amp;i = p = *pp = %p\n", &amp;i);
+printf("&amp;p = pp = %p\n", &amp;p);
+</code></pre>
+<hr/>
+<h2 id="tableaux-de-chaînes-de-caractères">Tableaux de chaînes de caractères</h2>
+<pre><code class="language-c">char strings[3][12] = {
+    "Hello",
+    "World",
+    "!"
+};
+</code></pre>
+<p><img alt="Tableaux fixes de chaînes" src="img/strings_fixed.jpg"/></p>
+<pre><code class="language-c">char* strings[3] = {
+    "Hello",
+    "World",
+    "!"
+};
+</code></pre>
+<p><img alt="Tableaux de pointeurs de chaînes" src="img/strings_pointers.jpg"/></p>
+<hr/>
+<h2 id="erreurs-courantes-avec-les-pointeurs">Erreurs courantes avec les pointeurs</h2>
+<p><strong>Pointeur non initialisé</strong></p>
+<pre><code class="language-c">int* p;       // p contient des données indéterminées
+*p = 10;      // Comportement indéfini
+</code></pre>
+<p><strong>Déréférencement d’un pointeur NULL</strong></p>
+<pre><code class="language-c">int* p = NULL;
+*p = 5; // Segfault
+</code></pre>
+<p><strong>Dépassement de tableau</strong></p>
+<pre><code class="language-c">int a[3] = {1,2,3};
+int* p = a + 5;
+printf("%d\n", *p);
+</code></pre>
+<p><strong>Pointeur pendu (dangling)</strong></p>
+<pre><code class="language-c">int* bad_ptr() {
+    int x = 10;
+    return &amp;x;  // ❌ variable locale
+}
+</code></pre>
+<hr/>
+<h2 id="débogage-avec--fsanitize=address">Débogage avec <code>-fsanitize=address</code></h2>
+<p>AddressSanitizer est un outil de <code>gcc</code> pour détecter les erreurs mémoire à l’exécution.<br/>
+Il détecte :
+- les dépassements de tampon,
+- les accès après libération (<code>use-after-free</code>),
+- les corruptions mémoire,
+- les doubles <code>free()</code>,
+- les fuites mémoire.</p>
+<p>Utilisation :</p>
+<ul>
+<li><code>-g</code> : inclut les informations de débogage.</li>
+<li><code>-fsanitize=address</code> : active AddressSanitizer.</li>
+</ul>
+<pre><code class="language-bash">gcc -g -fsanitize=address -Wall -Wextra main.c
+</code></pre>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int arr[3] = {10, 20, 30};
+    printf("Avant écriture, arr[0] = %d\n", arr[0]);
+    arr[5] = 999;
+    printf("Après écriture, arr[5] = %d\n", arr[5]);
+    return 0;
+}
+</code></pre>
+<hr/>
+<h2 id="débogage-avec-gdb">Débogage avec GDB</h2>
+<p>GDB est le débogueur standard pour les programmes C.<br/>
+Il permet de :
+- suivre l’exécution pas à pas,
+- trouver les erreurs de pointeurs et segfaults,
+- examiner les variables et la mémoire.</p>
+<hr/>
+<h3 id="navigation-dans-le-programme">Navigation dans le programme</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Commande</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>r[un]</code></td>
+<td style="text-align: left;">Lancer le programme</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>start</code></td>
+<td style="text-align: left;">Arrêter au début de <code>main()</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b[reak] test</code></td>
+<td style="text-align: left;">Placer un point d’arrêt sur la fonction <code>test</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b[reak] 42</code></td>
+<td style="text-align: left;">Point d’arrêt à la ligne 42</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>n[ext]</code></td>
+<td style="text-align: left;">Exécuter la ligne suivante (sans entrer dans les fonctions)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>s[tep]</code></td>
+<td style="text-align: left;">Entrer dans la fonction</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c[ontinue]</code></td>
+<td style="text-align: left;">Continuer jusqu’au prochain point d’arrêt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inspection-des-variables">Inspection des variables</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Commande</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>p[rint] var</code></td>
+<td style="text-align: left;">Affiche la valeur</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>p[rint] *p</code></td>
+<td style="text-align: left;">Déréférence la valeur</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>disp[lay] var</code></td>
+<td style="text-align: left;">Affichage continu</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b[ack]t[race]</code></td>
+<td style="text-align: left;">Pile d’appels</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>q[uit]</code></td>
+<td style="text-align: left;">Quitter GDB</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<p>Exemple général :  </p>
+<pre><code class="language-bash">gcc -g main.c -o program
+gdb ./program
+(gdb) run
+Program received signal SIGSEGV
+→ faute de segmentation dans foo() à main.c:32
+(gdb) print p
+$1 = (int *) 0x0
+(gdb) print *p
+Cannot access memory at address 0x0
+</code></pre>
+<hr/>
+<h2 id="exemple-de-débogage">Exemple de débogage</h2>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    char msg[5] = "test";
+    msg[5] = '!';
+    printf("%s\n", msg);
+    return 0;
+}
+</code></pre>
+<pre><code class="language-bash">gcc -g program.c -o program
+gdb ./program
+(gdb) start
+(gdb) next
+(gdb) display msg
+...
+</code></pre>
+<hr/>
+<h2 id="références">Références</h2>
+<ul>
+<li><a href="https://en.cppreference.com/w/c/language/pointer.html">CppReference : Pointeurs</a> </li>
+<li><a href="https://publications.gbdirect.co.uk/c_book/">The C Book</a> </li>
+<li><a href="https://sourceware.org/gdb/documentation/">Documentation GDB</a> </li>
+</ul></div>
+  <div id="content-en" style="display:none;"><h2 id="introduction">Introduction</h2>
+<ul>
+<li><strong>Pointers</strong> are a centrql concept in C programming.  </li>
+<li>They allow <strong>direct memory access</strong>.  </li>
+<li>Incorrect use can cause to subtle and serious bugs.</li>
+</ul>
+<hr/>
+<h2 id="what-is-a-pointer?">What is a Pointer?</h2>
+<ul>
+<li>A <strong>pointer</strong> is a variable that stores a <strong>memory address</strong>.</li>
+<li>Memory address identifies where a value is stored in memory.</li>
+<li>They are <strong>fixed-length unsigned integers</strong>.</li>
+<li>Pointers have types like <code>int*</code>, <code>char*</code>, etc., indicating the <strong>pointed to type</strong>.</li>
+</ul>
+<hr/>
+<h2 id="memory-cells-and-addresses">Memory Cells and Addresses</h2>
+<p><img alt="Memory representation" src="img/memory_representation.jpg"/></p>
+<hr/>
+<h2 id="variables-and-memory">Variables and Memory</h2>
+<p><img alt="Memory representation" src="img/variable_definition.jpg"/></p>
+<hr/>
+<h2 id="declaration-and-initialization">Declaration and Initialization</h2>
+<pre><code class="language-c">int i = 0x12345678;
+int* p = &amp;i;
+</code></pre>
+<hr/>
+<h2 id="printing-pointers">Printing Pointers</h2>
+<pre><code class="language-c">int i = 0x12345678;
+int* p = &amp;i;
+
+printf("p = %p\n", p);
+</code></pre>
+<p>Use <strong><code>%p</code></strong> in <code>printf()</code> to print pointer addresses.</p>
+<hr/>
+<h2 id="dereferencing-pointers">Dereferencing Pointers</h2>
+<pre><code class="language-c">int i = 42;
+
+int* p = &amp;i;
+printf("*p = %i\n", *p);
+
+*p = 72;
+printf("i = %i\n", i);
+</code></pre>
+<p>When <code>p</code> points to <code>i</code>, <code>*p</code> refers to <code>i</code>.</p>
+<hr/>
+<h2 id="null-pointers">Null Pointers</h2>
+<p>Use <code>NULL</code> for pointers that do not point to a valid object
+<code>NULL</code> is a constant defined in <code>&lt;stddef.h&gt;</code>, <code>&lt;stdlib.h&gt;</code> and <code>stdio.h&gt;</code>
+Never dereference a <code>NULL</code> pointer</p>
+<pre><code class="language-c">int* p0; // Uninitialized
+int* p1 = NULL; // Set to NULL
+int* p2 = 0; // Set to NULL (deprecated)
+
+printf("p0 = %p\n", p0); //p0 = random address -&gt; this is undefined behavior
+printf("p1 = %p\n", p1); //p1 = (nil)
+printf("p2 = %p\n", p2); //p2 = (nil)
+</code></pre>
+<p>❗ Always initialize pointers before using them.</p>
+<hr/>
+<h2 id="passing-parameters">Passing Parameters</h2>
+<p>Passing parameters by :</p>
+<ul>
+<li><strong>value</strong> (copy)</li>
+<li><strong>address</strong> (using pointers)</li>
+</ul>
+<hr/>
+<h3 id="passing-pamareters-by-value">Passing Pamareters by Value</h3>
+<pre><code class="language-c">void swap(int a, int b)
+{
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+int x = 1, y = 9;
+printf("x = %i, y = %i\n", x, y); //x = 1, y = 9
+
+swap(x, y);
+printf("x = %i, y = %i\n", x, y); //x = 1, y = 9
+
+</code></pre>
+<p>No change occurs because only copies are swapped.</p>
+<hr/>
+<h3 id="passing-parameters-by-address">Passing Parameters by Address</h3>
+<pre><code class="language-c">void swap_using_pointers(int* a, int* b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int x = 1, y = 9;
+printf("x = %i, y = %i\n", x, y); //x = 1, y = 9
+
+swap_using_pointers(&amp;x, &amp;y);
+printf("x = %i, y = %i\n", x, y); //x = 9, y = 1
+</code></pre>
+<p>✅ Values are swapped correctly.</p>
+<hr/>
+<h2 id="returning-multiple-results-via-pointers">Returning Multiple Results via Pointers</h2>
+<pre><code class="language-c">char* euclidean_div(int a, int b, int* quotient, int* remainder)
+{
+    if (b == 0)
+    {
+        *quotient = 0;
+        *remainder = 0;
+        return "Error";
+    }
+    else
+    {
+        *quotient = a / b;
+        *remainder = a % b;
+        return "OK";
+    }
+}
+
+
+
+
+int q = 0;
+int r = 0;
+char* err = NULL;
+
+err = euclidean_div(10, 4, &amp;q, &amp;r);
+printf("10/4: q = %i and r = %i (%s)\n", q, r, err); 
+// 10/4: q = 2 and r = 2 (OK)
+
+err = euclidean_div(10, 0, &amp;q, &amp;r);
+printf("10/0: q = %i and r = %i (%s)\n", q, r, err);
+// 10/0: q = 0 and r = 0 (Error)
+
+</code></pre>
+<hr/>
+<h2 id="pointer-arithmetic">Pointer Arithmetic</h2>
+<ul>
+<li>Additions and subtractions are allowed on pointers</li>
+<li>p + 1 does not point to the next byte but to the next value</li>
+<li>The number of bytes for a value depends on its type</li>
+</ul>
+<pre><code class="language-c">char c = 0x42;
+char* p = &amp;c;
+
+printf("sizeof(c) = %zu\n", sizeof(c)); //sizeof(c) = 1
+printf(" p = %p\n", p); //p = 0x7fff2a00b0df
+printf(" p + 1 = %p\n", p + 1); //p + 1 = 0x7fff2a00b0e0
+</code></pre>
+<p><img alt="Pointer arithmetic (char)" src="img/pointer_char.jpg"/></p>
+<pre><code class="language-c">int i = 0x42;
+int* p = &amp;i;
+
+printf("sizeof(i) = %zu\n", sizeof(i)); //sizeof(i) = 4
+printf(" p = %p\n", p); //p = 0x7fff53ead82c
+printf(" p + 1 = %p\n", p + 1); //p + 1 = x7fff53ead830
+</code></pre>
+<p><img alt="Pointer arithmetic (int)" src="img/pointer_int.jpg"/></p>
+<hr/>
+<h2 id="size-of-pointers">Size of Pointers</h2>
+<p>All pointers have the same size, whatever their type
+It is the sizeof the size_t type.</p>
+<pre><code class="language-c">char* pc; // sizeof(pc) = 8
+int* pi; // sizeof(pi) = 8
+double* pd; // sizeof(pd) = 8
+void* pv; // sizeof(pv) = 8
+</code></pre>
+<hr/>
+<h2 id="pointers-and-arrays">Pointers and Arrays</h2>
+<p>Array variable:
+- It is a constant address.
+- It points to the whole array (not only the first value).
+- The sizeof() operator returns the size in bytes of the array</p>
+<pre><code class="language-c">int a[] = { 72, 42, 16 };
+int* p = a;
+
+printf(" a = %p\n", a);  //a = 0x7ffc5f97e5cc
+printf("&amp;a = %p\n", &amp;a); //&amp;a = 0x7ffc5f97e5cc
+
+printf(" p = %p\n", p); //p = 0x7ffc5f97e5cc
+printf("&amp;p = %p\n", &amp;p); //&amp;p = 0x7ffc5f97e5c0
+</code></pre>
+<pre><code class="language-c">a[0] = p[0] = *(a + 0) = *(p + 0) = 72
+a[1] = p[1] = *(a + 1) = *(p + 1) = 42
+a[2] = p[2] = *(a + 2) = *(p + 2) = 16
+
+sizeof(a) = 12
+sizeof(p) = 8
+</code></pre>
+<pre><code class="language-c">int sum(int a[], size_t len);
+int sum(int* a, size_t len);
+</code></pre>
+<hr/>
+<h2 id="pointers-and-strings">Pointers and Strings</h2>
+<pre><code class="language-c">char a[] = "Hello";
+char* b = "World";
+
+printf("%s %s\n", a, b); //Hello World
+</code></pre>
+<hr/>
+<h2 id="the-const-keyword">The <code>const</code> Keyword</h2>
+<pre><code class="language-c">int a[] = { 72, 42, 16 };
+const int* p = a;
+
+p++; // OK
+*p = 28; // Compilation error
+</code></pre>
+<pre><code class="language-c">int a[] = { 72, 42, 16 };
+int* const p = a;
+
+p++; // Compilation error
+*p = 28; // OK
+</code></pre>
+<pre><code class="language-c">const int* const p = a; // neither move nor modify  int a[] = { 72, 42, 16 };
+const int* const p = a;
+
+p++; // Compilation error
+*p = 28; // Compilation error
+</code></pre>
+<h2 id="about-multiple-declarations">About Multiple Declarations</h2>
+<pre><code class="language-c">int* a;
+int *a;
+
+int* a, b;
+int *a, b;
+int* a;
+int b
+
+int* a, *b;
+int *a, *b;
+int* a;
+int* b;
+
+int* a, b; // This is not equivalent
+int* a;    // to this
+int* b;    // and this.
+</code></pre>
+<hr/>
+<h2 id="pointers-to-pointers">Pointers to Pointers</h2>
+<pre><code class="language-c">int i = 42;
+int* p = &amp;i;
+int** pp = &amp;p;
+
+printf(" i = *p = **pp = %i\n", i); //i = *p = **pp = 42
+printf("&amp;i = p = *pp = %p\n", &amp;i); //&amp;i = p = *pp = 0x7ffc544f3b44
+printf(" &amp;p = pp = %p\n", &amp;p); //&amp;p = pp = 0x7ffc544f3b48
+</code></pre>
+<hr/>
+<h2 id="arrays-of-strings">Arrays of Strings</h2>
+<pre><code class="language-c">char strings[3][12] = {
+    "Hello",
+    "World",
+    "!"
+};
+</code></pre>
+<p><img alt="Fixed Array of Strings" src="img/strings_fixed.jpg"/></p>
+<pre><code class="language-c">char* strings[3] = {
+    "Hello",
+    "World",
+    "!"
+};
+</code></pre>
+<p><img alt="Array of String Pointers" src="img/strings_pointers.jpg"/></p>
+<hr/>
+<h2 id="common-pointer-errors">Common Pointer Errors</h2>
+<p><strong>Uninitialized pointer</strong>
+- Dereferencing pointers that does not point to an allocated variable -&gt; access invalid memory</p>
+<pre><code class="language-c">int* p;       // p contains garbage
+*p = 10;      // Undefined behavior
+</code></pre>
+<pre><code class="language-c">int x = 0;
+int* p = &amp;x;  // p now holds the address of x
+</code></pre>
+<p><strong>Dereferencing NULL</strong></p>
+<pre><code class="language-c">int* p = NULL;
+*p = 5; // Segfault
+</code></pre>
+<p><strong>Out of bounds</strong></p>
+<pre><code class="language-c">int a[3] = {1,2,3};
+int* p = a + 5;
+printf("%d\n", *p);
+</code></pre>
+<p><strong>Dangling pointer</strong></p>
+<pre><code class="language-c">int* bad_ptr() {
+    int x = 10;
+    return &amp;x;  // ❌ Local variable
+}
+</code></pre>
+<hr/>
+<h2 id="debugging-with--fsanitize=address">Debugging with <code>-fsanitize=address</code></h2>
+<p>AdressSanitizer is a tool in gcc to detect runtime memory erros.
+It detects :
+- Buffer overflows (arrays)
+- Use-after-free
+- Heap/stack memory corruption
+- Double free()
+- Memory leaks
+Usage:
+- -g includes useful debugging information in the executable
+- -fsanitize=address enables the AdressSanitizer</p>
+<pre><code class="language-bash">gcc -g -fsanitize=address -Wall -Wextra main.c
+</code></pre>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main() {
+    int arr[3] = {10, 20, 30};
+
+    printf("Before writing, arr[0] = %d\n", arr[0]);
+
+    arr[5] = 999;
+
+    printf("After writing, arr[5] = %d\n", arr[5]);
+    return 0;
+}
+</code></pre>
+<pre><code class="language-c">gcc -g -fsanitize=address -Wall -Wextra sanitize.c
+./a.out
+
+Before writing, arr[0] = 10
+=================================================================
+==52216==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7f21edf00034 at pc 0x5655852c23c0 bp 0x7ffce051a200 sp 0x7ffce051a1f0
+WRITE of size 4 at 0x7f21edf00034 thread T0
+    #0 0x5655852c23bf in main ./sanitize.c:8
+
+</code></pre>
+<hr/>
+<h2 id="debugging-with-gdb">Debugging with GDB</h2>
+<p>GDB is the standard debugger for C programs
+- See program execution step by step
+Use GDB to :
+- Find pointer errors and segmentation faults
+- Inspect variables and memory
+- Understand crashes instead of guessing</p>
+<h3 id="moving-inside-the-program">Moving inside the program</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>r[un]</code></td>
+<td style="text-align: left;">Start the program</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>start</code></td>
+<td style="text-align: left;">Stop at <code>main()</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b[reak] test</code></td>
+<td style="text-align: left;">Set a breakpoint at test function</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b[reak] 42</code></td>
+<td style="text-align: left;">Break on line 42</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>n[ext]</code></td>
+<td style="text-align: left;">Next line (skip functions)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>s[tep]</code></td>
+<td style="text-align: left;">Step into function</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c[ontinue]</code></td>
+<td style="text-align: left;">Continue until next break</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inspect-variables">Inspect variables</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>p[rint] var</code></td>
+<td style="text-align: left;">Display value</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>p[rint] *p</code></td>
+<td style="text-align: left;">Dereference value</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>disp[lay] var</code></td>
+<td style="text-align: left;">Show continuously</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b[ack]t[race]</code></td>
+<td style="text-align: left;">Call stack</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>q[uit]</code></td>
+<td style="text-align: left;">Exit GDB</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-c">gcc -g main.c -o program
+gdb ./program
+(gdb) run
+
+Program received signal SIGSEGV
+→ segmentation fault in function foo() at main.c:32
+
+
+(gdb) print p
+$1 = (int *) 0x0         // pointer is NULL
+
+
+(gdb) print *p
+Cannot access memory at address 0x0
+
+
+Program received SIGSEGV
+0x000055555555515 in main() at main.c:5
+
+(gdb) print p
+$1 = (int *) 0x7ffdf000ab20
+</code></pre>
+<hr/>
+<h2 id="debugging-example">Debugging Example</h2>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main() {
+    char msg[5] = "test";
+
+    msg[5] = '!';
+
+    printf("%s\n", msg);
+    return 0;
+}
+</code></pre>
+<pre><code class="language-bash">gcc -g program.c -o program
+
+gdb ./program
+
+(gdb) start
+(gdb) next
+
+(gdb) display msg
+(gdb) next
+
+(gdb) print msg[4]
+(gdb) next
+
+(gdb) print msg[4]
+(gdb) print msg[5]
+</code></pre>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+void print_chars(const char *p) {
+    while (*p != '\0') {
+        printf("%c ", *p);
+        p++;
+    }
+    printf("\n");
+}
+
+int main() {
+    char buffer[6] = "hello";
+
+    char *ptr = buffer;
+
+    ptr += 6;
+
+    printf("Character at ptr: %c\n", *ptr);
+
+    print_chars(ptr);
+
+    return 0;
+}
+</code></pre>
+<pre><code class="language-bash">gcc -g pointers.c -o pointers
+
+gdb ./pointers
+
+(gdb) start
+(gdb) next
+(gdb) next
+
+(gdb) print buffer
+(gdb) print &amp;buffer[0]
+(gdb) next
+
+(gdb) print ptr
+(gdb) next
+
+(gdb) print ptr
+(gdb) x/8cb ptr # Examine 8 char at addr in ptr
+(gdb) next
+
+(gdb) step  # Now inside the function
+</code></pre>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+void print_chars(const char *p) {
+    while (*p != '\0') {
+        printf("%c ", *p);
+        p++;
+    }
+    printf("\n");
+}
+
+int main() {
+    char buffer[6] = "hello";
+    char *ptr = buffer;
+
+    ptr += 2;
+
+    printf("Character at ptr: %c\n", *ptr);
+
+    print_chars(ptr);
+
+    return 0;
+}
+</code></pre>
+<hr/>
+<h1>References</h1>
+<ul>
+<li><a href="https://en.cppreference.com/w/c/language/pointer.html">CppReference: Pointers</a></li>
+<li><a href="https://publications.gbdirect.co.uk/c_book/">The C Book</a></li>
+<li><a href="https://sourceware.org/gdb/documentation/">GDB Documentation</a></li>
+</ul></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/c.min.js"></script>
+<script>
+hljs.highlightAll();
+
+// copier
+document.querySelectorAll('pre').forEach(pre=>{
+  const btn=document.createElement('button');
+  btn.className='copy-btn';btn.textContent='Copier';pre.appendChild(btn);
+  btn.onclick=()=>{navigator.clipboard.writeText(pre.querySelector('code').innerText);
+    btn.textContent='✔';setTimeout(()=>btn.textContent='Copier',1200)};
+});
+
+// thème
+const body=document.body,themeBtn=document.getElementById('theme-toggle'),
+link=document.getElementById('hljs-theme');
+let dark=true;
+function setTheme(d){
+  if(d){
+    body.classList.remove('light');body.classList.add('dark');
+    themeBtn.textContent='🌙';
+    link.href='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css';
+  }else{
+    body.classList.remove('dark');body.classList.add('light');
+    themeBtn.textContent='☀️';
+    link.href='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css';
+  }
+}
+setTheme(true);
+themeBtn.onclick=()=>{dark=!dark;setTheme(dark);};
+
+// menu
+const sidebar=document.getElementById('sidebar');
+const main=document.querySelector('main');
+document.getElementById('menu-toggle').onclick=()=>{
+  sidebar.classList.toggle('closed');
+  if (sidebar.classList.contains('closed')) {
+    main.style.marginLeft='0';main.style.width='100%';
+  } else {
+    main.style.marginLeft='250px';main.style.width='calc(100% - 250px)';
+  }
+};
+
+// PDF
+document.getElementById('pdf-btn').onclick=()=>window.print();
+
+// scroll spy
+const sec=document.querySelectorAll('h2[id]');
+const links=document.querySelectorAll('nav a');
+window.addEventListener('scroll',()=>{
+  let cur="";
+  sec.forEach(s=>{if(scrollY>=s.offsetTop-140)cur=s.id;});
+  links.forEach(a=>{
+    a.classList.remove('active');
+    if(a.getAttribute('href')==="#"+cur)a.classList.add('active');
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btnFr = document.getElementById('btn-fr');
+  const btnEn = document.getElementById('btn-en');
+  const contentFr = document.getElementById('content-fr');
+  const contentEn = document.getElementById('content-en');
+  const tocFr = document.querySelector('.toc-fr');
+  const tocEn = document.querySelector('.toc-en');
+
+  function showFR() {
+    btnFr.classList.add('active');
+    btnEn.classList.remove('active');
+    contentFr.style.display = 'block';
+    contentEn.style.display = 'none';
+    tocFr.style.display = 'block';
+    tocEn.style.display = 'none';
+  }
+
+  function showEN() {
+    btnEn.classList.add('active');
+    btnFr.classList.remove('active');
+    contentFr.style.display = 'none';
+    contentEn.style.display = 'block';
+    tocFr.style.display = 'none';
+    tocEn.style.display = 'block';
+  }
+
+  btnFr.addEventListener('click', showFR);
+  btnEn.addEventListener('click', showEN);
+
+  // ✅ Forcer FR à l'ouverture
+  showFR();
+
+  console.log('FR visible ?', window.getComputedStyle(document.getElementById('content-fr')).display);
+console.log('EN visible ?', window.getComputedStyle(document.getElementById('content-en')).display);
+});
+</script>
+</body>
+</html>
