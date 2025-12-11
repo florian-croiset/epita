@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mole's Quest – À la recherche des Dieux Disparus</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 
@@ -176,21 +177,39 @@ section p {
   text-align: justify;
 }
 
-/* ===== BOUTON TOP ===== */
-.scroll-top{
-  position:fixed;
-  right:2rem;bottom:90px;
-  width:55px;height:55px;
-  border:none;border-radius:50%;
-  background:linear-gradient(135deg,#d4a574,#b8884f);
-  color:#1a1a1a;
-  font-size:1.5rem;
-  cursor:pointer;
-  box-shadow:0 5px 20px rgba(212,165,116,.4);
-  z-index:2000;
-  transition:transform .3s;
+/* ===== BOUTON CROIX / FERMETURE ===== */
+.scroll-top {
+  position: fixed;
+  right: 2rem;
+  bottom: 90px;
+  width: 55px;
+  height: 55px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4a574, #b8884f);
+  color: #1a1a1a;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 5px 20px rgba(212, 165, 116, 0.4);
+  z-index: 2000;
+  
+  /* Nouveau: Cache par défaut */
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.6);
+  transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
 }
-.scroll-top:hover{transform:translateY(-4px) rotate(360deg);}
+
+.scroll-top:hover {
+  /* Retiré le rotate */
+  transform: translateY(-4px) scale(1);
+}
+
+.scroll-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
 </style>
 </head>
 
@@ -232,10 +251,11 @@ section p {
   </section>
 </div>
 
-<button class="scroll-top" id="scrollTopBtn" title="Fermer la section et remonter">↑</button>
-
+<button class="scroll-top" id="scrollTopBtn" title="Fermer la section active">
+    <i class="fa-solid fa-xmark"></i>
+</button>
 <script>
-/* Animation du titre */
+/* animation du titre */
 const title = document.getElementById('animatedTitle');
 title.addEventListener('animationend', e => {
   if (e.animationName === 'typing') title.classList.add('finished');
@@ -252,9 +272,17 @@ function setScrollLocked(locked) {
   }
 }
 
+// Référence au bouton croix
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+// Fonction pour gérer la visibilité du bouton
+function toggleCloseButton(show) {
+    scrollTopBtn.classList.toggle('visible', show);
+}
+
+
 // Variable pour empêcher le spam de clics
 let isAnimating = false; 
-const TRANSITION_TIME = 1200; // 1200ms, basé sur le 1.2s du CSS
+const TRANSITION_TIME = 1200; // 1200ms
 
 function showSection(id) {
   if (isAnimating) return;
@@ -262,6 +290,7 @@ function showSection(id) {
   const activeSection = document.querySelector('section.active');
   const newSection = document.getElementById(id);
 
+  // Si on clique sur la section déjà ouverte, on ne fait rien
   if (activeSection === newSection) return;
 
   isAnimating = true;
@@ -275,6 +304,7 @@ function showSection(id) {
       // Puis on ouvre la nouvelle
       newSection.classList.add('active');
       setScrollLocked(false);
+      toggleCloseButton(true); // Afficher la croix
       
       const heroH = document.querySelector('.hero').offsetHeight * 0.95;
       window.scrollTo({ top: heroH, behavior: 'smooth' });
@@ -289,6 +319,7 @@ function showSection(id) {
     // Si aucune section n'est ouverte, on ouvre directement
     newSection.classList.add('active');
     setScrollLocked(false);
+    toggleCloseButton(true); // Afficher la croix
     
     const heroH = document.querySelector('.hero').offsetHeight * 0.95;
     window.scrollTo({ top: heroH, behavior: 'smooth' });
@@ -300,62 +331,182 @@ function showSection(id) {
   }
 }
 
-/* Gestion des clics sur la navigation (plus propre) */
+// Fonction pour fermer la section active
+function closeActiveSection() {
+    if (isAnimating) return;
+    
+    const activeSection = document.querySelector('section.active');
+    if (activeSection) {
+        isAnimating = true;
+        activeSection.classList.remove('active');
+        toggleCloseButton(false); // Cacher la croix
+
+        // Retour en haut de page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Attendre la fin de la fermeture pour rebloquer le scroll
+        setTimeout(() => {
+            setScrollLocked(true);
+            isAnimating = false;
+        }, TRANSITION_TIME);
+    }
+}
+
+
+/* Gestion des clics sur la navigation */
 document.querySelectorAll('nav a').forEach(link => {
   link.addEventListener('click', function(e) {
-    e.preventDefault(); // Empêche le saut par défaut vers l'ancre
+    e.preventDefault(); 
     const targetId = this.getAttribute('href').substring(1);
     showSection(targetId);
   });
 });
 
 /* Gestion du bouton de téléchargement du Hero */
-document.querySelector('.download-btn').addEventListener('click', function(e) {
+document.querySelector('.download-btn[data-target]').addEventListener('click', function(e) {
     e.preventDefault();
     const targetId = this.getAttribute('data-target');
     showSection(targetId);
 });
 
 
-/* Bouton Fermer et Remonter */
-document.getElementById('scrollTopBtn').addEventListener('click', () => {
-  if (isAnimating) return;
-  
-  const activeSection = document.querySelector('section.active');
-  if (activeSection) {
-    isAnimating = true;
-    activeSection.classList.remove('active');
+/* Action du bouton Croix (Fermeture) */
+document.getElementById('scrollTopBtn').addEventListener('click', closeActiveSection);
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Attendre la fin de la fermeture pour rebloquer le scroll
-    setTimeout(() => {
-      setScrollLocked(true);
-      isAnimating = false;
-    }, TRANSITION_TIME);
-  } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+/* ==================================== */
+/* NOUVEAUTÉ : Navigation au clavier */
+/* ==================================== */
+document.addEventListener('keydown', (e) => {
+    const activeSection = document.querySelector('section.active');
+    
+    if (activeSection) {
+        const sections = Array.from(document.querySelectorAll('#sections-wrapper section'));
+        const activeIndex = sections.findIndex(sec => sec.classList.contains('active'));
+        let targetIndex;
+        
+        // --- 1. Fermeture par Échap (Escape) ---
+        if (e.key === 'Escape') {
+            closeActiveSection();
+            e.preventDefault(); // Empêche d'autres actions par défaut (ex: sortir du mode plein écran)
+            return;
+        }
+
+        // --- 2. Navigation Gauche/Droite ---
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault(); // Empêche le scroll horizontal par défaut
+            
+            if (e.key === 'ArrowRight') {
+                // Suivant : Boucle vers la première si on est à la fin
+                targetIndex = (activeIndex + 1) % sections.length; 
+            } else {
+                // Précédent : Boucle vers la dernière si on est au début
+                targetIndex = (activeIndex - 1 + sections.length) % sections.length;
+            }
+            
+            const targetId = sections[targetIndex].id;
+            showSection(targetId);
+        }
+    }
 });
+/* ==================================== */
+
+/* ==================================== */
+/* NOUVEAUTÉ : Navigation par Molette (Scroll) */
+/* ==================================== */
+document.addEventListener('wheel', (e) => {
+    // Vérifie si une section est active et si aucune animation n'est en cours
+    const activeSection = document.querySelector('section.active');
+    if (!activeSection || isAnimating) {
+        return; 
+    }
+
+    // On s'assure que le mouvement est vertical
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        
+        // Empêche le défilement normal de la page
+        e.preventDefault(); 
+        
+        const sections = Array.from(document.querySelectorAll('#sections-wrapper section'));
+        const activeIndex = sections.findIndex(sec => sec.classList.contains('active'));
+        let targetIndex;
+        
+        // Défilement vers le bas (Down Scroll) -> Section Suivante
+        if (e.deltaY > 0) {
+            // Suivant : Boucle vers la première si on est à la fin
+            targetIndex = (activeIndex + 1) % sections.length; 
+        } 
+        // Défilement vers le haut (Up Scroll) -> Section Précédente
+        else if (e.deltaY < 0) {
+            // Précédent : Boucle vers la dernière si on est au début
+            targetIndex = (activeIndex - 1 + sections.length) % sections.length;
+        } else {
+            return; // Pas de mouvement Y
+        }
+        
+        const targetId = sections[targetIndex].id;
+        showSection(targetId);
+    }
+}, { passive: false }); // { passive: false } est crucial pour permettre le e.preventDefault()
+/* ==================================== */
+
+
 
 // Initialisation au chargement
 setScrollLocked(true);
+toggleCloseButton(false);
 
 
 
-function heroHeight(){
-  return document.querySelector('.hero').offsetHeight*0.95;
+
+
+
+
+// Fonction pour fermer la section active
+function closeActiveSection() {
+    if (isAnimating) return;
+    
+    const activeSection = document.querySelector('section.active');
+    if (activeSection) {
+        isAnimating = true;
+        activeSection.classList.remove('active');
+        toggleCloseButton(false); // Cacher la croix
+
+        // Retour en haut de page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Attendre la fin de la fermeture pour rebloquer le scroll
+        setTimeout(() => {
+            setScrollLocked(true);
+            isAnimating = false;
+        }, TRANSITION_TIME);
+    }
 }
 
-/* bouton ↑ ferme toutes les sections et remonte */
-document.getElementById('scrollTopBtn').addEventListener('click', () => {
-  document.querySelectorAll('#sections-wrapper section').forEach(sec => {
-    sec.classList.remove('active');
-    sec.style.display = 'none';
+
+/* Gestion des clics sur la navigation */
+document.querySelectorAll('nav a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault(); 
+    const targetId = this.getAttribute('href').substring(1);
+    showSection(targetId);
   });
-  setScrollLocked(true); // bloque la molette à nouveau
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+/* Gestion du bouton de téléchargement du Hero */
+document.querySelector('.download-btn[data-target]').addEventListener('click', function(e) {
+    e.preventDefault();
+    const targetId = this.getAttribute('data-target');
+    showSection(targetId);
+});
+
+
+/* Action du bouton Croix (Fermeture) */
+document.getElementById('scrollTopBtn').addEventListener('click', closeActiveSection);
+
+// Initialisation au chargement
+setScrollLocked(true);
+toggleCloseButton(false);
 </script>
 </body>
 </html>
