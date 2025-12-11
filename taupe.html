@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mole's Quest – À la recherche des Dieux Disparus</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+
+/* bloque tout scroll vertical quand la classe est active */
+html.no-scroll,
+body.no-scroll {
+  height: 100%;
+  overflow: hidden !important;
+  position: fixed;      /* stoppe la molette et les inerties */
+  width: 100%;
+}
+
+
+body.no-scroll {
+  overflow: hidden;       /* empêche le scroll */
+  height: 100vh;          /* bloque la hauteur pour éviter le rebond */
+}
+
+
+body{
+  font-family:'Georgia',serif;
+  background:#0a0a0a;
+  color:#e0e0e0;
+  overflow-x:hidden;
+  background-image: url("taupe_fond.png");
+}
+
+/* ===== HERO ===== */
+.hero{
+  /*min-height:100vh;*/
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:3rem 1rem;
+  /*background:linear-gradient(to bottom,rgba(10,10,10,0.4),rgba(10,10,10,0.8)),*/
+  background-image: url("taupe-bg.jpg");
+  background-size:cover;
+  background-position:center;
+}
+
+h1.type-title{
+  color:#d4a574;
+  font-size:4rem;
+  letter-spacing:4px;
+  border-right:4px solid #d4a574;
+  white-space:nowrap;
+  overflow:hidden;
+  animation:typing 3s steps(20,end) forwards,blink .7s step-end infinite;
+}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes blink{50%{border-color:transparent}}
+h1.finished{border-color:transparent;animation:glow 2.5s ease-in-out infinite alternate;}
+@keyframes glow{0%{text-shadow:0 0 10px rgba(212,165,116,.4);}100%{text-shadow:0 0 40px rgba(212,165,116,.8);}}
+.subtitle{
+  margin-top:1rem;
+  color:#aaa;
+  font-style:italic;
+  font-size:1.3rem;
+  opacity:0;
+  animation:fadeIn 2s ease 3.3s forwards;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.download-btn{
+  margin-top:2rem;
+  padding:1rem 2.5rem;
+  border:none;
+  border-radius:40px;
+  background:linear-gradient(135deg,#d4a574,#b8884f);
+  font-weight:bold;
+  color:#1a1a1a;
+  cursor:pointer;
+  transition:.3s;
+}
+.download-btn:hover{transform:translateY(-3px);}
+
+/* ===== NAVIGATION ===== */
+nav{
+  position:fixed;
+  bottom:0;left:0;
+  width:100%;
+  background:rgba(26,26,26,0.9);
+  border-top:2px solid #d4a574;
+  backdrop-filter:blur(8px);
+  z-index:1000;
+}
+nav ul{
+  list-style:none;
+  display:flex;
+  justify-content:center;
+  gap:2rem;
+  padding:.8rem 0;
+}
+nav a{
+  color:#d4a574;
+  text-decoration:none;
+  font-size:1rem;
+  position:relative;
+  transition:color .3s;
+}
+nav a::after{
+  content:"";
+  position:absolute;
+  bottom:-5px;left:50%;
+  transform:translateX(-50%);
+  width:0;height:2px;
+  background:#d4a574;
+  transition:width .3s;
+}
+nav a:hover::after{width:100%;}
+nav a:hover{color:#e0b584;}
+
+/* ===== SECTIONS ===== */
+#sections-wrapper{
+  padding-bottom:3rem; /* pour respiration avant nav */
+}
+section{
+  display:none;
+  max-width:900px;
+  margin:0 auto;
+  background:linear-gradient(180deg,#101010,#1b1410);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:10px;
+  padding:6rem 10% 5rem; /* ↑ 6rem = espace sous nav fix */
+  box-shadow:0 0 30px rgba(0,0,0,0.4);
+  opacity:0;
+  transform:translateY(40px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+section.active{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
+  margin-bottom:20px;
+}
+section h2{
+  text-align:center;
+  color:#d4a574;
+  font-size:2.2rem;
+  margin-bottom:2rem;
+}
+section p{
+  line-height:1.8;
+  font-size:1.1rem;
+  color:#c0c0c0;
+  text-align:justify;
+}
+
+/* ===== BOUTON TOP ===== */
+.scroll-top{
+  position:fixed;
+  right:2rem;bottom:90px;
+  width:55px;height:55px;
+  border:none;border-radius:50%;
+  background:linear-gradient(135deg,#d4a574,#b8884f);
+  color:#1a1a1a;
+  font-size:1.5rem;
+  cursor:pointer;
+  box-shadow:0 5px 20px rgba(212,165,116,.4);
+  z-index:2000;
+  transition:transform .3s;
+}
+.scroll-top:hover{transform:translateY(-4px) rotate(360deg);}
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+  <h1 id="animatedTitle" class="type-title">Nom du Jeu</h1>
+  <p class="subtitle">À la recherche des Dieux Disparus</p>
+  <button class="download-btn" onclick="showSection('telecharger')">Télécharger le jeu</button>
+</div>
+
+<nav>
+  <ul>
+    <li><a href="#lore" onclick="showSection('lore')">Histoire</a></li>
+    <li><a href="#gameplay" onclick="showSection('gameplay')">Gameplay</a></li>
+    <li><a href="#equipe" onclick="showSection('equipe')">Équipe</a></li>
+    <li><a href="#telecharger" onclick="showSection('telecharger')">Télécharger</a></li>
+  </ul>
+</nav>
+
+<div id="sections-wrapper">
+  <section id="lore">
+    <h2>L'Histoire</h2>
+    <p style="font-size:1rem;">Depuis des millénaires, les profondeurs de la terre abritent un secret oublié. Jadis, les dieux marchaient sous terre, illuminant les cavernes de leur présence divine. Mais un jour, sans avertissement, ils ont disparu, laissant le monde souterrain dans l'obscurité. Vous incarnez une taupe courageuse, gardienne des traditions. À travers des galeries infinies, retrouvez la trace des Dieux disparus.</p>
+  </section>
+  <section id="gameplay">
+    <h2>Gameplay</h2>
+    <p>Le jeu combine exploration et stratégie : creusez, percez des tunnels, découvrez des reliques et affrontez des ennemis corrompus. Chaque décision influence votre progression et les paysages souterrains se transforment au fil des quêtes.</p>
+  </section>
+  <section id="equipe">
+    <h2>L'Équipe</h2>
+    <p>Une équipe de passionnés : artistes, codeurs et musiciens s’unissent pour offrir une expérience sonore et visuelle unique. Ensemble, ils donnent vie à l’univers mystique de Mole's Quest.</p>
+  </section>
+  <section id="telecharger" style="text-align:center;">
+    <h2>Téléchargement</h2>
+    <p>Prêt pour l'aventure ?</p>
+    <button class="download-btn">Télécharger pour Windows</button>
+    <button class="download-btn" style="margin-left:1rem;">Télécharger pour Mac</button>
+  </section>
+</div>
+
+<button class="scroll-top" id="scrollTopBtn" title="Fermer la section et remonter">↑</button>
+
+<script>
+/* animation du titre */
+const title=document.getElementById('animatedTitle');
+title.addEventListener('animationend',e=>{if(e.animationName==='typing')title.classList.add('finished');});
+
+function setScrollLocked(locked) {
+  if (locked) {
+    document.documentElement.classList.add('no-scroll');
+    document.body.classList.add('no-scroll');
+  } else {
+    document.documentElement.classList.remove('no-scroll');
+    document.body.classList.remove('no-scroll');
+  }
+}
+
+
+/* ouvrir une seule section visible + marge nav */
+function showSection(id) {
+  const sections = document.querySelectorAll('#sections-wrapper section');
+  let opened = false;
+
+  sections.forEach(sec => {
+    if (sec.id === id) {
+      sec.style.display = 'block';
+      requestAnimationFrame(() => sec.classList.add('active'));
+      window.scrollTo({ top: heroHeight(), behavior: 'smooth' });
+      opened = true;
+    } else {
+      sec.classList.remove('active');
+      setTimeout(() => sec.style.display = 'none', 300);
+    }
+  });
+
+  // autorise le scroll uniquement s’il y a une section ouverte
+  setScrollLocked(!opened);
+}
+function heroHeight(){
+  return document.querySelector('.hero').offsetHeight*0.95;
+}
+
+/* bouton ↑ ferme toutes les sections et remonte */
+document.getElementById('scrollTopBtn').addEventListener('click', () => {
+  document.querySelectorAll('#sections-wrapper section').forEach(sec => {
+    sec.classList.remove('active');
+    sec.style.display = 'none';
+  });
+  setScrollLocked(true); // bloque la molette à nouveau
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
