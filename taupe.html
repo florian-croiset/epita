@@ -55,7 +55,8 @@ h1.type-title{
   border-right:4px solid #d4a574;
   white-space:nowrap;
   overflow:hidden;
-  animation:typing 3s steps(20,end) forwards,blink .7s step-end infinite;
+  /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!CHANGEMENT ICI : steps(10, end) pour 10 caractères !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+  animation:typing 3s steps(10,end) forwards,blink .7s step-end infinite;
 }
 @keyframes typing{from{width:0}to{width:100%}}
 @keyframes blink{50%{border-color:transparent}}
@@ -215,7 +216,6 @@ section p {
 </head>
 
 <body>
-
 <div class="hero">
   <h1 id="animatedTitle" class="type-title">Nom du Jeu</h1>
   <p class="subtitle">À la recherche des Dieux Disparus</p>
