@@ -121,34 +121,39 @@ nav a:hover{color:#e0b584;}
 /* ===== SECTIONS ===== */
 #sections-wrapper {
   padding-bottom: 3rem;
-  position: relative; /* Important pour la stabilité */
-  min-height: 200px;  /* Évite que la page ne remonte brutalement si vide */
+  position: relative;
+  min-height: 200px;
 }
 
 section {
-  display: none;
+  /* Retrait de display: none/block */
   max-width: 900px;
   margin: 0 auto;
   background: linear-gradient(180deg, #101010, #1b1410);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  padding: 6rem 10% 5rem;
+  padding: 0 10%; /* Padding vertical géré par height */
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-  
-  /* Départ : on part d'un peu plus bas (60px) pour donner de l'élan */
+
+  /* NOUVEAU: Réduction de la hauteur au minimum */
+  height: 0;
+  overflow: hidden;
   opacity: 0;
-  transform: translateY(60px); 
-  
-  /* LA MAGIE EST ICI : Cubic-Bezier */
-  /* Signifie : Démarrage fluide, et atterrissage extrêmement progressif */
-  transition: opacity 1.4s ease-out, transform 1.4s cubic-bezier(0.19, 1, 0.22, 1);
+  transform: translateY(60px);
+
+  /* Durée ralentie et uniforme (1.2s) */
+  transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), padding 1.2s ease, height 1.2s ease;
 }
 
 section.active {
-  display: block;
+  /* Hauteur fixée pour montrer le contenu (doit être assez grand) */
+  height: auto; 
+  padding: 6rem 10% 5rem; /* Padding vertical réintroduit */
   opacity: 1;
   transform: translateY(0);
 }
+
+/* On retire la classe .closing qui n'est plus nécessaire */
 
 section.closing {
   opacity: 0;
@@ -194,16 +199,16 @@ section p {
 <div class="hero">
   <h1 id="animatedTitle" class="type-title">Nom du Jeu</h1>
   <p class="subtitle">À la recherche des Dieux Disparus</p>
-  <button class="download-btn" onclick="showSection('telecharger')">Télécharger le jeu</button>
+  <button class="download-btn" data-target="telecharger">Télécharger le jeu</button>
 </div>
 
 <nav>
-  <ul>
-    <li><a href="#lore" onclick="showSection('lore')">Histoire</a></li>
-    <li><a href="#gameplay" onclick="showSection('gameplay')">Gameplay</a></li>
-    <li><a href="#equipe" onclick="showSection('equipe')">Équipe</a></li>
-    <li><a href="#telecharger" onclick="showSection('telecharger')">Télécharger</a></li>
-  </ul>
+<ul>
+<li><a href="#lore">Histoire</a></li>
+<li><a href="#gameplay">Gameplay</a></li>
+<li><a href="#equipe">Équipe</a></li>
+<li><a href="#telecharger">Télécharger</a></li>
+</ul>
 </nav>
 
 <div id="sections-wrapper">
@@ -230,7 +235,7 @@ section p {
 <button class="scroll-top" id="scrollTopBtn" title="Fermer la section et remonter">↑</button>
 
 <script>
-/* animation du titre */
+/* Animation du titre */
 const title = document.getElementById('animatedTitle');
 title.addEventListener('animationend', e => {
   if (e.animationName === 'typing') title.classList.add('finished');
@@ -247,7 +252,9 @@ function setScrollLocked(locked) {
   }
 }
 
+// Variable pour empêcher le spam de clics
 let isAnimating = false; 
+const TRANSITION_TIME = 1200; // 1200ms, basé sur le 1.2s du CSS
 
 function showSection(id) {
   if (isAnimating) return;
@@ -257,40 +264,60 @@ function showSection(id) {
 
   if (activeSection === newSection) return;
 
-  setScrollLocked(false);
   isAnimating = true;
 
-  const openNew = () => {
-    newSection.style.display = 'block';
-    requestAnimationFrame(() => {
+  // Si on est en train de fermer une section
+  if (activeSection) {
+    activeSection.classList.remove('active');
+    
+    // Attendre que l'ancienne section se ferme (1200ms)
+    setTimeout(() => {
+      // Puis on ouvre la nouvelle
       newSection.classList.add('active');
+      setScrollLocked(false);
       
       const heroH = document.querySelector('.hero').offsetHeight * 0.95;
       window.scrollTo({ top: heroH, behavior: 'smooth' });
       
-      // On attend la fin de l'ouverture (1400ms pour matcher le CSS)
+      // Attendre la fin de l'ouverture
       setTimeout(() => {
         isAnimating = false;
-      }, 1400); 
-    });
-  };
+      }, TRANSITION_TIME);
+    }, TRANSITION_TIME);
 
-  if (activeSection) {
-    // Phase de fermeture
-    activeSection.classList.remove('active');
-    activeSection.classList.add('closing');
-
-    // On attend 800ms (durée plus courte définie dans le CSS .closing pour que ça traîne pas)
-    setTimeout(() => {
-      activeSection.style.display = 'none';
-      activeSection.classList.remove('closing');
-      openNew(); 
-    }, 800); 
   } else {
-    openNew();
+    // Si aucune section n'est ouverte, on ouvre directement
+    newSection.classList.add('active');
+    setScrollLocked(false);
+    
+    const heroH = document.querySelector('.hero').offsetHeight * 0.95;
+    window.scrollTo({ top: heroH, behavior: 'smooth' });
+
+    // Attendre la fin de l'ouverture
+    setTimeout(() => {
+      isAnimating = false;
+    }, TRANSITION_TIME);
   }
 }
 
+/* Gestion des clics sur la navigation (plus propre) */
+document.querySelectorAll('nav a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault(); // Empêche le saut par défaut vers l'ancre
+    const targetId = this.getAttribute('href').substring(1);
+    showSection(targetId);
+  });
+});
+
+/* Gestion du bouton de téléchargement du Hero */
+document.querySelector('.download-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    const targetId = this.getAttribute('data-target');
+    showSection(targetId);
+});
+
+
+/* Bouton Fermer et Remonter */
 document.getElementById('scrollTopBtn').addEventListener('click', () => {
   if (isAnimating) return;
   
@@ -298,23 +325,20 @@ document.getElementById('scrollTopBtn').addEventListener('click', () => {
   if (activeSection) {
     isAnimating = true;
     activeSection.classList.remove('active');
-    activeSection.classList.add('closing');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // 800ms pour la fermeture
+    // Attendre la fin de la fermeture pour rebloquer le scroll
     setTimeout(() => {
-      activeSection.style.display = 'none';
-      activeSection.classList.remove('closing');
       setScrollLocked(true);
       isAnimating = false;
-    }, 800);
+    }, TRANSITION_TIME);
   } else {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 });
 
-// Initialisation au chargement pour être sûr
+// Initialisation au chargement
 setScrollLocked(true);
 
 
