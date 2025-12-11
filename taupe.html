@@ -119,39 +119,56 @@ nav a:hover::after{width:100%;}
 nav a:hover{color:#e0b584;}
 
 /* ===== SECTIONS ===== */
-#sections-wrapper{
-  padding-bottom:3rem; /* pour respiration avant nav */
+#sections-wrapper {
+  padding-bottom: 3rem;
+  position: relative; /* Important pour la stabilité */
+  min-height: 200px;  /* Évite que la page ne remonte brutalement si vide */
 }
-section{
-  display:none;
-  max-width:900px;
-  margin:0 auto;
-  background:linear-gradient(180deg,#101010,#1b1410);
-  border:1px solid rgba(255,255,255,0.05);
-  border-radius:10px;
-  padding:6rem 10% 5rem; /* ↑ 6rem = espace sous nav fix */
-  box-shadow:0 0 30px rgba(0,0,0,0.4);
-  opacity:0;
-  transform:translateY(40px);
-  transition:opacity .6s ease,transform .6s ease;
+
+section {
+  display: none;
+  max-width: 900px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #101010, #1b1410);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 6rem 10% 5rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  
+  /* Départ : on part d'un peu plus bas (60px) pour donner de l'élan */
+  opacity: 0;
+  transform: translateY(60px); 
+  
+  /* LA MAGIE EST ICI : Cubic-Bezier */
+  /* Signifie : Démarrage fluide, et atterrissage extrêmement progressif */
+  transition: opacity 1.4s ease-out, transform 1.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
-section.active{
-  display:block;
-  opacity:1;
-  transform:translateY(0);
-  margin-bottom:20px;
+
+section.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
-section h2{
-  text-align:center;
-  color:#d4a574;
-  font-size:2.2rem;
-  margin-bottom:2rem;
+
+section.closing {
+  opacity: 0;
+  /* Quand ça part, on veut que ça parte un peu plus vite vers le haut */
+  transform: translateY(-30px);
+  transition: opacity 0.8s ease, transform 0.8s ease; 
 }
-section p{
-  line-height:1.8;
-  font-size:1.1rem;
-  color:#c0c0c0;
-  text-align:justify;
+
+section h2 {
+  text-align: center;
+  color: #d4a574;
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+}
+
+section p {
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: #c0c0c0;
+  text-align: justify;
 }
 
 /* ===== BOUTON TOP ===== */
@@ -214,9 +231,12 @@ section p{
 
 <script>
 /* animation du titre */
-const title=document.getElementById('animatedTitle');
-title.addEventListener('animationend',e=>{if(e.animationName==='typing')title.classList.add('finished');});
+const title = document.getElementById('animatedTitle');
+title.addEventListener('animationend', e => {
+  if (e.animationName === 'typing') title.classList.add('finished');
+});
 
+/* Gestion du Scroll Block */
 function setScrollLocked(locked) {
   if (locked) {
     document.documentElement.classList.add('no-scroll');
@@ -227,27 +247,78 @@ function setScrollLocked(locked) {
   }
 }
 
+let isAnimating = false; 
 
-/* ouvrir une seule section visible + marge nav */
 function showSection(id) {
-  const sections = document.querySelectorAll('#sections-wrapper section');
-  let opened = false;
+  if (isAnimating) return;
 
-  sections.forEach(sec => {
-    if (sec.id === id) {
-      sec.style.display = 'block';
-      requestAnimationFrame(() => sec.classList.add('active'));
-      window.scrollTo({ top: heroHeight(), behavior: 'smooth' });
-      opened = true;
-    } else {
-      sec.classList.remove('active');
-      setTimeout(() => sec.style.display = 'none', 300);
-    }
-  });
+  const activeSection = document.querySelector('section.active');
+  const newSection = document.getElementById(id);
 
-  // autorise le scroll uniquement s’il y a une section ouverte
-  setScrollLocked(!opened);
+  if (activeSection === newSection) return;
+
+  setScrollLocked(false);
+  isAnimating = true;
+
+  const openNew = () => {
+    newSection.style.display = 'block';
+    requestAnimationFrame(() => {
+      newSection.classList.add('active');
+      
+      const heroH = document.querySelector('.hero').offsetHeight * 0.95;
+      window.scrollTo({ top: heroH, behavior: 'smooth' });
+      
+      // On attend la fin de l'ouverture (1400ms pour matcher le CSS)
+      setTimeout(() => {
+        isAnimating = false;
+      }, 1400); 
+    });
+  };
+
+  if (activeSection) {
+    // Phase de fermeture
+    activeSection.classList.remove('active');
+    activeSection.classList.add('closing');
+
+    // On attend 800ms (durée plus courte définie dans le CSS .closing pour que ça traîne pas)
+    setTimeout(() => {
+      activeSection.style.display = 'none';
+      activeSection.classList.remove('closing');
+      openNew(); 
+    }, 800); 
+  } else {
+    openNew();
+  }
 }
+
+document.getElementById('scrollTopBtn').addEventListener('click', () => {
+  if (isAnimating) return;
+  
+  const activeSection = document.querySelector('section.active');
+  if (activeSection) {
+    isAnimating = true;
+    activeSection.classList.remove('active');
+    activeSection.classList.add('closing');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 800ms pour la fermeture
+    setTimeout(() => {
+      activeSection.style.display = 'none';
+      activeSection.classList.remove('closing');
+      setScrollLocked(true);
+      isAnimating = false;
+    }, 800);
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+// Initialisation au chargement pour être sûr
+setScrollLocked(true);
+
+
+
 function heroHeight(){
   return document.querySelector('.hero').offsetHeight*0.95;
 }
