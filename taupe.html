@@ -18,11 +18,10 @@ body.no-scroll {
   width: 100%;
 }
 
-
+/*
 body.no-scroll {
-  overflow: hidden;       /* empêche le scroll */
-  height: 100vh;          /* bloque la hauteur pour éviter le rebond */
-}
+  height: 100vh;          
+}*/
 
 
 body{
@@ -31,6 +30,10 @@ body{
   color:#e0e0e0;
   overflow-x:hidden;
   background-image: url("taupe_fond.png");
+  background-attachment: fixed; /* Fixe l'image par rapport à la fenêtre (viewport) */
+  background-position: center center; /* Centre l'image */
+  background-repeat: no-repeat; /* Empêche la répétition de l'image */
+  background-size: cover; /* ESSENTIEL : Redimensionne l'image pour couvrir toute la zone */
 }
 
 /* ===== HERO ===== */
@@ -58,7 +61,8 @@ h1.type-title{
   /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!CHANGEMENT ICI : steps(10, end) pour 10 caractères !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
   animation:typing 3s steps(10,end) forwards,blink .7s step-end infinite;
 }
-@keyframes typing{from{width:0}to{width:100%}}
+  /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!CHANGEMENT ICI : width:10ch pour 10 caractères !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+@keyframes typing{from{width:0}to{width:10ch}}
 @keyframes blink{50%{border-color:transparent}}
 h1.finished{border-color:transparent;animation:glow 2.5s ease-in-out infinite alternate;}
 @keyframes glow{0%{text-shadow:0 0 10px rgba(212,165,116,.4);}100%{text-shadow:0 0 40px rgba(212,165,116,.8);}}
@@ -153,7 +157,9 @@ section.active {
   padding: 6rem 10% 5rem; /* Padding vertical réintroduit */
   opacity: 1;
   transform: translateY(0);
-  padding-top:3%;
+  padding-top:3%!important;
+  padding-bottom:4%!important;
+  padding: 6rem 4% 5rem;
 }
 
 /* On retire la classe .closing qui n'est plus nécessaire */
@@ -219,7 +225,7 @@ section p {
 <div class="hero">
   <h1 id="animatedTitle" class="type-title">Nom du Jeu</h1>
   <p class="subtitle">À la recherche des Dieux Disparus</p>
-  <button class="download-btn" data-target="telecharger">Télécharger le jeu</button>
+  <a href="fichier.exe" target="_blank" download><button class="download-btn">Télécharger le jeu</button></a>
 </div>
 
 <nav>
@@ -247,7 +253,7 @@ section p {
   <section id="telecharger" style="text-align:center;">
     <h2>Téléchargement</h2>
     <p>Prêt pour l'aventure ?</p>
-    <button class="download-btn">Télécharger pour Windows</button>
+    <a href="fichier.exe" target="_blank" download><button class="download-btn">Télécharger pour Windows</button></a>
     <button class="download-btn" style="margin-left:1rem;">Télécharger pour Mac</button>
   </section>
 </div>
